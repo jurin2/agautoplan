@@ -1707,7 +1707,7 @@ body.loader-active {
   --car-desktop-scale-add: 0.2;
   --car-desktop-x-add: 10px;
   --car-desktop-y-add: 25px;
-  --car-mobile-scale-add: 0.1;
+  --car-mobile-scale-add: 0;
   --car-mobile-x-add: 0px;
   --car-mobile-y-add: 0px;
 }
@@ -2385,18 +2385,47 @@ body.loader-active {
 }
 
 /* =========================================================
-   모바일 적용 (768px 이하)
+   모바일 차량 이미지 표시 기준 (768px 이하)
+   - 기기 폭과 관계없이 좌우 여백을 동일하게 유지
+   - 아래 --car-mobile-side-space 값만 바꾸면 전체 여백 조정
 ========================================================= */
+:root {
+  --car-mobile-side-space: 24px;
+}
+
 @media (max-width: 768px) {
+  /* 일반 차량: 이미지가 들어가는 실제 영역의 좌우 여백 고정 */
+  .wizard-car-card.car-adjust:not(.is-empty):not(.has-own-background) .wizard-car-image--staged {
+    width: 100% !important;
+    height: 255px !important;
+    min-height: 255px !important;
+    padding-left: var(--car-mobile-side-space) !important;
+    padding-right: var(--car-mobile-side-space) !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
   .wizard-car-card.car-adjust:not(.is-empty):not(.has-own-background) .wizard-car-image--staged img {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    object-position: center bottom !important;
     transform:
       translate(
         calc(var(--brand-mobile-x) + var(--car-mobile-x-add)),
         calc(var(--brand-mobile-y) + var(--car-mobile-y-add))
       )
       scale(calc(var(--brand-mobile-scale) + var(--car-mobile-scale-add))) !important;
+    transform-origin: center bottom !important;
   }
 
+  /* 자체 배경 차량은 기존 전체 배경 구조 유지 */
   .wizard-car-card.car-adjust.has-own-background .wizard-car-image--full img {
     transform:
       translate(
