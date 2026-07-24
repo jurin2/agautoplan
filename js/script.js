@@ -8124,11 +8124,14 @@ const vehicleCatalog = [
           ` : `<p class="empty-selection-guide">브랜드를 먼저 선택해 주세요.</p>`}
         </fieldset>
 
-        <div class="wizard-car-card ${!state.carName ? "is-empty" : ""} ${brand?.ownBackground ? "has-own-background" : ""} ${state.brandName === "테슬라" ? "is-tesla" : ""} ${state.brandName === "제네시스" ? "is-genesis" : ""} ${state.brandName === "기아" ? "is-kia" : ""} ${state.brandName === "기아" && state.carName === "봉고3" ? "is-kia-bongo3" : ""}" data-brand="${state.brandName || ""}" data-car="${state.carName || ""}">
+        <div class="wizard-car-card car-adjust ${!state.carName ? "is-empty" : ""} ${brand?.ownBackground ? "has-own-background" : ""} ${state.brandName === "테슬라" ? "is-tesla" : ""} ${state.brandName === "제네시스" ? "is-genesis" : ""} ${state.brandName === "기아" ? "is-kia" : ""} ${state.brandName === "기아" && state.carName === "봉고3" ? "is-kia-bongo3" : ""}" data-brand="${state.brandName || ""}" data-car="${state.carName || ""}">
           ${carImageMarkup}
 
           <div class="paint-block ${!state.carName ? "is-disabled-block" : ""}" data-option-section="paint">
-            <div class="paint-label"><b>4</b> 외장 색상</div>
+            <div class="paint-label">
+              <span class="paint-label-title"><b>4</b> 외장 색상${state.carName ? `<em>${paints.length}개</em>` : ""}</span>
+              ${isPaintScrollable ? `<small class="paint-swipe-guide">좌우로 넘겨보세요</small>` : ""}
+            </div>
             ${state.carName ? `
               <div class="wizard-paints${isPaintScrollable ? " is-scrollable" : ""}">
                 ${paints.map(item => `

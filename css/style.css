@@ -1803,3 +1803,103 @@ body.loader-active {
     transform-origin: center center !important;
   }
 }
+
+/* =========================================================
+   차량 이미지 반응형 보정 클래스
+   - 데스크톱: --car-desktop-scale / x / y
+   - 모바일:   --car-mobile-scale / x / y
+   - 차종별 선택자는 아래 예시처럼 추가
+========================================================= */
+.car-adjust {
+  --car-desktop-scale: var(--brand-image-scale, 1);
+  --car-desktop-x: var(--brand-image-x, 0px);
+  --car-desktop-y: var(--brand-image-y, 0px);
+
+  --car-mobile-scale: var(--car-desktop-scale);
+  --car-mobile-x: var(--car-desktop-x);
+  --car-mobile-y: var(--car-desktop-y);
+}
+
+.car-adjust:not(.has-own-background) .wizard-car-image--staged img {
+  transform:
+    translate(var(--car-desktop-x), var(--car-desktop-y))
+    scale(var(--car-desktop-scale)) !important;
+  transform-origin: center bottom !important;
+}
+
+.car-adjust.has-own-background .wizard-car-image--full img {
+  transform:
+    translate(var(--car-desktop-x), var(--car-desktop-y))
+    scale(var(--car-desktop-scale)) !important;
+  transform-origin: center center !important;
+}
+
+/* 차종별 보정 예시 및 현재 보정값 */
+.car-adjust[data-brand="르노"][data-car="필랑트 하이브리드"] {
+  --car-desktop-scale: 0.8;
+  --car-desktop-x: 0px;
+  --car-desktop-y: -5px;
+  --car-mobile-scale: 0.88;
+  --car-mobile-x: 0px;
+  --car-mobile-y: 4px;
+}
+
+.car-adjust[data-brand="벤츠"][data-car="s클래스"] {
+  --car-desktop-scale: 1.2;
+  --car-desktop-x: 40px;
+  --car-desktop-y: 40px;
+  --car-mobile-scale: 1.05;
+  --car-mobile-x: 18px;
+  --car-mobile-y: 24px;
+}
+
+@media (max-width: 720px) {
+  .car-adjust:not(.has-own-background) .wizard-car-image--staged img {
+    transform:
+      translate(var(--car-mobile-x), var(--car-mobile-y))
+      scale(var(--car-mobile-scale)) !important;
+  }
+
+  .car-adjust.has-own-background .wizard-car-image--full img {
+    transform:
+      translate(var(--car-mobile-x), var(--car-mobile-y))
+      scale(var(--car-mobile-scale)) !important;
+  }
+}
+
+/* 외장 색상 개수 및 스와이프 안내 */
+.paint-label {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.paint-label-title {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.paint-label-title em {
+  color: inherit;
+  margin-left: 4px;
+  font-size: inherit;
+  font-style: normal;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+.paint-swipe-guide {
+  color: #7a8797;
+  flex: 0 0 auto;
+  font-size: var(--font-14);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .paint-label {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
