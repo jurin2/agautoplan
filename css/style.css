@@ -1,3 +1,57 @@
+:root {
+  /* 데스크탑용 */
+  /* --car-guide-x1: 14%;
+  --car-guide-x2: 86%;
+  --car-guide-bottom: 33px; */
+
+  /* 모바일용 */
+  /* --car-guide-x1: 14%;
+  --car-guide-x2: 86%;
+  --car-guide-bottom: 50px; */
+}
+
+.wizard-car-image {
+  position: relative !important;
+}
+
+.wizard-car-image::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  pointer-events: none !important;
+
+  background-image:
+    /* 빨간선 1 */
+    linear-gradient(
+      to right,
+      transparent calc(var(--car-guide-x1) - 0.5px),
+      red calc(var(--car-guide-x1) - 0.5px),
+      red calc(var(--car-guide-x1) + 0.5px),
+      transparent calc(var(--car-guide-x1) + 0.5px)
+    ),
+
+    /* 빨간선 2 */
+    linear-gradient(
+      to right,
+      transparent calc(var(--car-guide-x2) - 0.5px),
+      red calc(var(--car-guide-x2) - 0.5px),
+      red calc(var(--car-guide-x2) + 0.5px),
+      transparent calc(var(--car-guide-x2) + 0.5px)
+    ),
+
+    /* 파란 가로선 */
+    linear-gradient(
+      to bottom,
+      transparent calc(100% - var(--car-guide-bottom) - 0.5px),
+      blue calc(100% - var(--car-guide-bottom) - 0.5px),
+      blue calc(100% - var(--car-guide-bottom) + 0.5px),
+      transparent calc(100% - var(--car-guide-bottom) + 0.5px)
+    ) !important;
+}
+
+
 /* =========================================================
    선택 시 흔들림 방지
 ========================================================= */
@@ -1550,61 +1604,66 @@ body.loader-active {
 
 
 /* =========================================================
-   추가 표시 보정
-   - 테슬라: 120% 크기, 아래로 이동
-   - 아우디(own background): 좌우 여백 없이 카드 영역 가득 표시
+   차량 이미지 크기·위치 조정
+   수정 순서
+   1. 브랜드 공통값을 먼저 조정
+   2. 특정 차량만 다르면 바로 아래 차량별 예외값 조정
+
+   scale : 이미지 크기
+   x     : 좌우 위치 (+ 오른쪽 / - 왼쪽)
+   y     : 상하 위치 (+ 아래 / - 위)
 ========================================================= */
-.wizard-car-card.is-tesla:not(.has-own-background) .wizard-car-image--staged img {
-  width: 120% !important;
-  max-width: 120% !important;
-  height: 120% !important;
-  max-height: 120% !important;
-  object-fit: contain !important;
-  object-position: center bottom !important;
-  transform: translateY(16px) scale(1) !important;
+
+/* 공통 기본값
+   - 브랜드 기본값이 항상 기준
+   - 차량별 값은 브랜드값에 더하는 추가 보정값
+*/
+.car-adjust {
+  /* 브랜드 공통 기준 */
+  --brand-desktop-scale: 1;
+  --brand-desktop-x: 0px;
+  --brand-desktop-y: 0px;
+  --brand-mobile-scale: 1;
+  --brand-mobile-x: 0px;
+  --brand-mobile-y: 0px;
+
+  /* 차량별 추가 보정 - 기본은 0 */
+  --car-desktop-scale-add: 0;
+  --car-desktop-x-add: 0px;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+
+/* 일반 차량 이미지 적용 */
+.wizard-car-card.car-adjust:not(.is-empty):not(.has-own-background) .wizard-car-image--staged img {
+  transform:
+    translate(
+      calc(var(--brand-desktop-x) + var(--car-desktop-x-add)),
+      calc(var(--brand-desktop-y) + var(--car-desktop-y-add))
+    )
+    scale(calc(var(--brand-desktop-scale) + var(--car-desktop-scale-add))) !important;
   transform-origin: center bottom !important;
 }
 
-.wizard-car-card.has-own-background .wizard-car-image--full {
-  width: 100% !important;
-  height: 255px !important;
-  min-height: 255px !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  background: transparent !important;
+/* 자체 배경이 있는 차량 이미지 적용 */
+.wizard-car-card.car-adjust.has-own-background .wizard-car-image--full img {
+  transform:
+    translate(
+      calc(var(--brand-desktop-x) + var(--car-desktop-x-add)),
+      calc(var(--brand-desktop-y) + var(--car-desktop-y-add))
+    )
+    scale(calc(var(--brand-desktop-scale) + var(--car-desktop-scale-add))) !important;
+  transform-origin: center center !important;
 }
 
-.wizard-car-card.has-own-background .wizard-car-image--full img {
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  max-height: none !important;
-  object-fit: cover !important;
-  object-position: center center !important;
-  display: block !important;
-}
-
-
-/* =========================================================
-   최종 아우디/테슬라 보정
-========================================================= */
-.wizard-car-card.is-tesla:not(.has-own-background) .wizard-car-image--staged img {
-  width: 120% !important;
-  max-width: 120% !important;
-  height: 120% !important;
-  max-height: 120% !important;
-  object-fit: contain !important;
-  object-position: center bottom !important;
-  transform: translateY(35px) scale(1) !important;
-  transform-origin: center bottom !important;
-}
-
+/* 아우디처럼 자체 배경이 있는 이미지 영역 */
 .wizard-car-card.has-own-background .wizard-car-image--full {
   width: calc(100% + 32px) !important;
   height: 255px !important;
   min-height: 255px !important;
-  margin-left: -16px !important;
-  margin-right: -16px !important;
+  margin-inline: -16px !important;
   padding: 0 !important;
   overflow: hidden !important;
   background: transparent !important;
@@ -1617,253 +1676,734 @@ body.loader-active {
   max-height: none !important;
   object-fit: cover !important;
   object-position: center center !important;
-  transform: scale(1.18) !important;
-  transform-origin: center center !important;
   display: block !important;
 }
 
 
 /* =========================================================
-   테슬라 최종 보정
-   - 사이즈 130%
-   - Y 위치 40px
+   현대
 ========================================================= */
-.wizard-car-card.is-tesla:not(.has-own-background) .wizard-car-image--staged img {
-  width: 130% !important;
-  max-width: 130% !important;
-  height: 130% !important;
-  max-height: 130% !important;
-  object-fit: contain !important;
-  object-position: center bottom !important;
-  transform: translateY(40px) scale(1) !important;
-  transform-origin: center bottom !important;
+
+/* 현대 브랜드 전체 기본값
+   여기 값을 바꾸면 현대 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="현대"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 0.96;
+  --brand-desktop-x: 0px;
+  --brand-desktop-y: 18px;
+
+  /* 모바일 */
+  --brand-mobile-scale: 1.18;
+  --brand-mobile-x: 8px;
+  --brand-mobile-y: 8px;
 }
 
+/* 차량별 추가 보정값
+   브랜드 기본값에서 차이나는 만큼만 적습니다.
+*/
+/* 그랜저 */
+.car-adjust[data-brand="현대"][data-car="그랜저"] {
+  --car-desktop-scale-add: 0.2;
+  --car-desktop-x-add: 10px;
+  --car-desktop-y-add: 25px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 그랜저 하이브리드 */
+.car-adjust[data-brand="현대"][data-car="그랜저 하이브리드"] {
+  --car-desktop-scale-add: 0.2;
+  --car-desktop-x-add: 10px;
+  --car-desktop-y-add: 25px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 베뉴 */
+.car-adjust[data-brand="현대"][data-car="베뉴"] {
+  --car-desktop-scale-add: 0.2;
+  --car-desktop-x-add: 3px;
+  --car-desktop-y-add: 22px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 스타리아 */
+.car-adjust[data-brand="현대"][data-car="스타리아"] {
+  --car-desktop-scale-add: 0.25;
+  --car-desktop-x-add: 6px;
+  --car-desktop-y-add: 15px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 스타리아 하이브리드 */
+.car-adjust[data-brand="현대"][data-car="스타리아 하이브리드"] {
+  --car-desktop-scale-add: 0.25;
+  --car-desktop-x-add: 6px;
+  --car-desktop-y-add: 15px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 싼타페 */
+.car-adjust[data-brand="현대"][data-car="싼타페"] {
+  --car-desktop-scale-add: 0.1;
+  --car-desktop-x-add: 15px;
+  --car-desktop-y-add: 8px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 싼타페 하이브리드 */
+.car-adjust[data-brand="현대"][data-car="싼타페 하이브리드"] {
+  --car-desktop-scale-add: 0.1;
+  --car-desktop-x-add: 15px;
+  --car-desktop-y-add: 8px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 쏘나타 */
+.car-adjust[data-brand="현대"][data-car="쏘나타"] {
+  --car-desktop-scale-add: 0.1;
+  --car-desktop-x-add: 15px;
+  --car-desktop-y-add: 8px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 쏘나타 하이브리드 */
+.car-adjust[data-brand="현대"][data-car="쏘나타 하이브리드"] {
+  --car-desktop-scale-add: 0.1;
+  --car-desktop-x-add: 15px;
+  --car-desktop-y-add: 8px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 아반떼 */
+.car-adjust[data-brand="현대"][data-car="아반떼"] {
+  --car-desktop-scale-add: 0.1;
+  --car-desktop-x-add: 11px;
+  --car-desktop-y-add: 8px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 아반떼 하이브리드 */
+.car-adjust[data-brand="현대"][data-car="아반떼 하이브리드"] {
+  --car-desktop-scale-add: 0.1;
+  --car-desktop-x-add: 11px;
+  --car-desktop-y-add: 8px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 아이오닉5 */
+.car-adjust[data-brand="현대"][data-car="아이오닉5"] {
+  --car-desktop-scale-add: 0.03;
+  --car-desktop-x-add: 11px;
+  --car-desktop-y-add: 2px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 아이오닉6 */
+.car-adjust[data-brand="현대"][data-car="아이오닉6"] {
+  --car-desktop-scale-add: 0.33;
+  --car-desktop-x-add: 12px;
+  --car-desktop-y-add: 15px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 아이오닉9 */
+.car-adjust[data-brand="현대"][data-car="아이오닉9"] {
+  --car-desktop-scale-add: 0.2;
+  --car-desktop-x-add: 9px;
+  --car-desktop-y-add: 5px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 캐스퍼 */
+.car-adjust[data-brand="현대"][data-car="캐스퍼"] {
+  --car-desktop-scale-add: 0.2;
+  --car-desktop-x-add: 1px;
+  --car-desktop-y-add: 17px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 캐스퍼 EV */
+.car-adjust[data-brand="현대"][data-car="캐스퍼 EV"] {
+  --car-desktop-scale-add: 0.2;
+  --car-desktop-x-add: 1px;
+  --car-desktop-y-add: 17px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 코나 */
+.car-adjust[data-brand="현대"][data-car="코나"] {
+  --car-desktop-scale-add: 0.08;
+  --car-desktop-x-add: 8px;
+  --car-desktop-y-add: 3px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 코나 하이브리드 */
+.car-adjust[data-brand="현대"][data-car="코나 하이브리드"] {
+  --car-desktop-scale-add: 0.08;
+  --car-desktop-x-add: 8px;
+  --car-desktop-y-add: 3px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 코나 EV */
+.car-adjust[data-brand="현대"][data-car="코나 EV"] {
+  --car-desktop-scale-add: 0.08;
+  --car-desktop-x-add: 8px;
+  --car-desktop-y-add: 3px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 투싼 */
+.car-adjust[data-brand="현대"][data-car="투싼"] {
+  --car-desktop-scale-add: 0.1;
+  --car-desktop-x-add: 17px;
+  --car-desktop-y-add: -5px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 투싼 하이브리드 */
+.car-adjust[data-brand="현대"][data-car="투싼 하이브리드"] {
+  --car-desktop-scale-add: 0.1;
+  --car-desktop-x-add: 17px;
+  --car-desktop-y-add: -5px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 팰리세이드 */
+.car-adjust[data-brand="현대"][data-car="팰리세이드"] {
+  --car-desktop-scale-add: 0.12;
+  --car-desktop-x-add: 15px;
+  --car-desktop-y-add: 10px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 팰리세이드 하이브리드 */
+.car-adjust[data-brand="현대"][data-car="팰리세이드 하이브리드"] {
+  --car-desktop-scale-add: 0.12;
+  --car-desktop-x-add: 15px;
+  --car-desktop-y-add: 10px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 포터2 */
+.car-adjust[data-brand="현대"][data-car="포터2"] {
+  --car-desktop-scale-add: 0.2;
+  --car-desktop-x-add: 14px;
+  --car-desktop-y-add: 10px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* 포터2 EV */
+.car-adjust[data-brand="현대"][data-car="포터2 EV"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-x-add: -7px;
+  --car-desktop-y-add: -7px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
 
 /* =========================================================
-   아우디 이미지 최종 보정
-   - scale 1.2
+   제네시스
 ========================================================= */
-.wizard-car-card.has-own-background .wizard-car-image--full img {
-  transform: scale(1.2) !important;
-  transform-origin: center center !important;
+
+/* 제네시스 브랜드 전체 기본값
+   여기 값을 바꾸면 제네시스 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="제네시스"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 1.12;
+  --brand-desktop-x: 0px;
+  --brand-desktop-y: 18px;
+
+  /* 모바일 */
+  --brand-mobile-scale: 0.99;
+  --brand-mobile-x: 0px;
+  --brand-mobile-y: 12px;
 }
 
-
-/* =========================================================
-   제네시스 차량 이미지 보정
-   - 사이즈 115%
-   - Y 위치 40px
-========================================================= */
-.wizard-car-card.is-genesis:not(.has-own-background) .wizard-car-image--staged img {
-  width: 115% !important;
-  max-width: 115% !important;
-  height: 115% !important;
-  max-height: 115% !important;
-  object-fit: contain !important;
-  object-position: center bottom !important;
-  transform: translateY(40px) scale(1) !important;
-  transform-origin: center bottom !important;
+/* 차량별 추가 보정값
+   브랜드 기본값에서 차이나는 만큼만 적습니다.
+*/
+/* G90 */
+.car-adjust[data-brand="제네시스"][data-car="G90"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-x-add: 0px;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
 }
-
-
-/* =========================================================
-   브랜드별 차량 이미지 조정값
-   - 크기: --brand-image-scale (1 = 100%, 1.15 = 115%)
-   - 가로 위치: --brand-image-x
-   - 세로 위치: --brand-image-y
-========================================================= */
-.wizard-car-card[data-brand="현대"] { --brand-image-scale: 1; --brand-image-x: 0px; --brand-image-y: 20px; }
-.wizard-car-card[data-brand="제네시스"] { --brand-image-scale: 1.15; --brand-image-x: 0px; --brand-image-y: 20px; }
-.wizard-car-card[data-brand="기아"] { --brand-image-scale: .9; --brand-image-x: 0px; --brand-image-y: 10px; }
-.wizard-car-card[data-brand="KGM"] { --brand-image-scale: 1; --brand-image-x: 0px; --brand-image-y: 10px; }
-.wizard-car-card[data-brand="르노"] { --brand-image-scale: 1; --brand-image-x: 12px; --brand-image-y: 30px; }
-.wizard-car-card[data-brand="쉐보레"] { --brand-image-scale: 1; --brand-image-x: 0px; --brand-image-y: 16px; }
-.wizard-car-card[data-brand="BMW"] { --brand-image-scale: 1.1; --brand-image-x: 5px; --brand-image-y: 20px; }
-.wizard-car-card[data-brand="벤츠"] { --brand-image-scale: 1.3; --brand-image-x: 20px; --brand-image-y: 50px; }
-.wizard-car-card[data-brand="볼보"] { --brand-image-scale: 1; --brand-image-x: 0px; --brand-image-y: 20px; }
-.wizard-car-card[data-brand="테슬라"] { --brand-image-scale: 1.5; --brand-image-x: 0px; --brand-image-y: 80px; }
-.wizard-car-card[data-brand="아우디"] { --brand-image-scale: 1.2; --brand-image-x: 0px; --brand-image-y: 0px; }
-
-.wizard-car-card:not(.has-own-background)[data-brand] .wizard-car-image--staged img {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: 100% !important;
-  max-height: 100% !important;
-  object-fit: contain !important;
-  object-position: center bottom !important;
-  transform: translate(var(--brand-image-x, 0px), var(--brand-image-y, 0px)) scale(var(--brand-image-scale, 1)) !important;
-  transform-origin: center bottom !important;
+/* GV60 EV */
+.car-adjust[data-brand="제네시스"][data-car="GV60 EV"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
 }
-
-.wizard-car-card.has-own-background[data-brand] .wizard-car-image--full img {
-  transform: translate(var(--brand-image-x, 0px), var(--brand-image-y, 0px)) scale(var(--brand-image-scale, 1)) !important;
-  transform-origin: center center !important;
+/* GV70 */
+.car-adjust[data-brand="제네시스"][data-car="GV70"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
 }
-
-
-/* 차량 이미지가 색상 버튼 클릭을 가로막지 않도록 처리 */
-.wizard-car-image,
-.wizard-car-image img,
-.wizard-car-stage-bg {
-  pointer-events: none !important;
+/* GV70 EV */
+.car-adjust[data-brand="제네시스"][data-car="GV70 EV"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
 }
-
-.paint-block,
-.wizard-paints,
-.wizard-paints button,
-.chosen-paint {
-  position: relative;
-  z-index: 10;
-  pointer-events: auto !important;
-}
-
-
-/* =========================================================
-   차량 이미지 조정값
-   - 공통값과 분리되어 따로 수정 가능
-   - 아래 3개 값만 변경하면 됨
-========================================================= */
-.wizard-car-card[data-brand="르노"][data-car="필랑트 하이브리드"] {
-  --brand-image-scale: 0.8;
-  --brand-image-x: 0;
-  --brand-image-y: -5px;
-}
-.wizard-car-card[data-brand="벤츠"][data-car="s클래스"] {
-  --brand-image-scale: 1.2;
-  --brand-image-x: 40px;
-  --brand-image-y: 40px;
+/* GV80 */
+.car-adjust[data-brand="제네시스"][data-car="GV80"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
 }
 
 /* =========================================================
-   모바일 차량 이미지 데스크톱 기준 정렬
-   - 데스크톱 미리보기 캔버스 폭(약 496px)을 모바일에서도 유지
-   - 좁은 화면에서는 캔버스 좌우만 자연스럽게 잘리도록 중앙 정렬
-   - 차량 크기와 바닥 기준 위치를 데스크톱과 동일하게 유지
+   기아
 ========================================================= */
-@media (max-width: 520px) {
-  .wizard-car-card:not(.is-empty):not(.has-own-background) .wizard-car-image--staged {
-    position: relative;
-    height: 255px !important;
-    min-height: 255px !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-  }
 
-  .wizard-car-card:not(.is-empty):not(.has-own-background) .wizard-car-image--staged img,
-  .wizard-car-card.is-kia:not(.has-own-background) .wizard-car-image--staged img,
-  .wizard-car-card.is-kia.is-kia-bongo3:not(.has-own-background) .wizard-car-image--staged img {
-    position: absolute !important;
-    left: 50% !important;
-    bottom: 0 !important;
-    width: 496px !important;
-    max-width: none !important;
-    height: 255px !important;
-    max-height: none !important;
-    object-fit: contain !important;
-    object-position: center bottom !important;
-    transform: translateX(-50%) !important;
-    transform-origin: center bottom !important;
-  }
+/* 기아 브랜드 전체 기본값
+   여기 값을 바꾸면 기아 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="기아"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 0.9;
+  --brand-desktop-x: 0px;
+  --brand-desktop-y: 12px;
 
-  .wizard-car-card.is-tesla:not(.has-own-background) .wizard-car-image--staged img {
-    position: absolute !important;
-    left: 50% !important;
-    bottom: 0 !important;
-    width: 645px !important;
-    max-width: none !important;
-    height: 332px !important;
-    max-height: none !important;
-    object-fit: contain !important;
-    object-position: center bottom !important;
-    transform: translate(-50%, 40px) !important;
-    transform-origin: center bottom !important;
-  }
+  /* 모바일 */
+  --brand-mobile-scale: 0.79;
+  --brand-mobile-x: 0px;
+  --brand-mobile-y: 8px;
+}
 
-  .wizard-car-card.has-own-background .wizard-car-image--full {
-    position: relative;
-    width: 100% !important;
-    height: 255px !important;
-    min-height: 255px !important;
-    margin: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .wizard-car-card.has-own-background .wizard-car-image--full img {
-    position: absolute !important;
-    left: 50% !important;
-    top: 50% !important;
-    width: 496px !important;
-    max-width: none !important;
-    height: 255px !important;
-    max-height: none !important;
-    object-fit: cover !important;
-    object-position: center center !important;
-    transform: translate(-50%, -50%) scale(1.2) !important;
-    transform-origin: center center !important;
-  }
+/* 차량별 추가 보정값
+   브랜드 기본값에서 차이나는 만큼만 적습니다.
+*/
+/* EV3 */
+.car-adjust[data-brand="기아"][data-car="EV3"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+/* EV4 */
+.car-adjust[data-brand="기아"][data-car="EV4"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
+}
+/* EV9 */
+.car-adjust[data-brand="기아"][data-car="EV9"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+/* K5 */
+.car-adjust[data-brand="기아"][data-car="K5"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
+}
+/* K5 하이브리드 */
+.car-adjust[data-brand="기아"][data-car="K5 하이브리드"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
+}
+/* K8 */
+.car-adjust[data-brand="기아"][data-car="K8"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-x-add: 0px;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* K8 하이브리드 */
+.car-adjust[data-brand="기아"][data-car="K8 하이브리드"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-x-add: 0px;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* K9 */
+.car-adjust[data-brand="기아"][data-car="K9"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-x-add: 0px;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* PV5 카고 */
+.car-adjust[data-brand="기아"][data-car="PV5 카고"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+/* 레이 */
+.car-adjust[data-brand="기아"][data-car="레이"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+/* 레이ev */
+.car-adjust[data-brand="기아"][data-car="레이ev"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+/* 모닝 */
+.car-adjust[data-brand="기아"][data-car="모닝"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+/* 봉고3 */
+.car-adjust[data-brand="기아"][data-car="봉고3"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+/* 카니발 */
+.car-adjust[data-brand="기아"][data-car="카니발"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+/* 카니발 하이브리드 */
+.car-adjust[data-brand="기아"][data-car="카니발 하이브리드"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
 }
 
 /* =========================================================
-   차량 이미지 반응형 보정 클래스
-   - 데스크톱: --car-desktop-scale / x / y
-   - 모바일:   --car-mobile-scale / x / y
-   - 차종별 선택자는 아래 예시처럼 추가
+   KGM
 ========================================================= */
-.car-adjust {
-  --car-desktop-scale: var(--brand-image-scale, 1);
-  --car-desktop-x: var(--brand-image-x, 0px);
-  --car-desktop-y: var(--brand-image-y, 0px);
 
-  --car-mobile-scale: var(--car-desktop-scale);
-  --car-mobile-x: var(--car-desktop-x);
-  --car-mobile-y: var(--car-desktop-y);
+/* KGM 브랜드 전체 기본값
+   여기 값을 바꾸면 KGM 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="KGM"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 0.96;
+  --brand-desktop-x: 0px;
+  --brand-desktop-y: 12px;
+
+  /* 모바일 */
+  --brand-mobile-scale: 0.84;
+  --brand-mobile-x: 0px;
+  --brand-mobile-y: 8px;
 }
 
-.car-adjust:not(.has-own-background) .wizard-car-image--staged img {
-  transform:
-    translate(var(--car-desktop-x), var(--car-desktop-y))
-    scale(var(--car-desktop-scale)) !important;
-  transform-origin: center bottom !important;
+/* 차량별 추가 보정값
+   브랜드 기본값에서 차이나는 만큼만 적습니다.
+*/
+/* 렉스턴 뉴 아레나 */
+.car-adjust[data-brand="KGM"][data-car="렉스턴 뉴 아레나"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+/* 무쏘 */
+.car-adjust[data-brand="KGM"][data-car="무쏘"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
+}
+/* 무쏘ev */
+.car-adjust[data-brand="KGM"][data-car="무쏘ev"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
+}
+/* 티볼리 */
+.car-adjust[data-brand="KGM"][data-car="티볼리"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
 }
 
-.car-adjust.has-own-background .wizard-car-image--full img {
-  transform:
-    translate(var(--car-desktop-x), var(--car-desktop-y))
-    scale(var(--car-desktop-scale)) !important;
-  transform-origin: center center !important;
+/* =========================================================
+   르노
+========================================================= */
+
+/* 르노 브랜드 전체 기본값
+   여기 값을 바꾸면 르노 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="르노"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 0.96;
+  --brand-desktop-x: 8px;
+  --brand-desktop-y: 20px;
+
+  /* 모바일 */
+  --brand-mobile-scale: 0.84;
+  --brand-mobile-x: 4px;
+  --brand-mobile-y: 13px;
 }
 
-/* 차종별 보정 예시 및 현재 보정값 */
+/* 차량별 추가 보정값
+   브랜드 기본값에서 차이나는 만큼만 적습니다.
+*/
+/* 필랑트 하이브리드 */
 .car-adjust[data-brand="르노"][data-car="필랑트 하이브리드"] {
-  --car-desktop-scale: 0.8;
-  --car-desktop-x: 0px;
-  --car-desktop-y: -5px;
-  --car-mobile-scale: 0.88;
-  --car-mobile-x: 0px;
-  --car-mobile-y: 4px;
+  --car-desktop-scale-add: 0;
+  --car-desktop-x-add: 0px;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
 }
 
+/* =========================================================
+   쉐보레
+========================================================= */
+
+/* 쉐보레 브랜드 전체 기본값
+   여기 값을 바꾸면 쉐보레 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="쉐보레"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 0.96;
+  --brand-desktop-x: 0px;
+  --brand-desktop-y: 14px;
+
+  /* 모바일 */
+  --brand-mobile-scale: 0.84;
+  --brand-mobile-x: 0px;
+  --brand-mobile-y: 9px;
+}
+
+/* 차량별 예외 없음 */
+
+/* =========================================================
+   BMW
+========================================================= */
+
+/* BMW 브랜드 전체 기본값
+   여기 값을 바꾸면 BMW 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="BMW"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 1.08;
+  --brand-desktop-x: 4px;
+  --brand-desktop-y: 18px;
+
+  /* 모바일 */
+  --brand-mobile-scale: 0.95;
+  --brand-mobile-x: 2px;
+  --brand-mobile-y: 12px;
+}
+
+/* 차량별 추가 보정값
+   브랜드 기본값에서 차이나는 만큼만 적습니다.
+*/
+/* 5시리즈 */
+.car-adjust[data-brand="BMW"][data-car="5시리즈"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-x-add: 0px;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
+}
+/* X3 */
+.car-adjust[data-brand="BMW"][data-car="X3"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
+}
+/* X5 */
+.car-adjust[data-brand="BMW"][data-car="X5"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+
+/* =========================================================
+   벤츠
+========================================================= */
+
+/* 벤츠 브랜드 전체 기본값
+   여기 값을 바꾸면 벤츠 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="벤츠"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 1.18;
+  --brand-desktop-x: 12px;
+  --brand-desktop-y: 28px;
+
+  /* 모바일 */
+  --brand-mobile-scale: 1.04;
+  --brand-mobile-x: 6px;
+  --brand-mobile-y: 18px;
+}
+
+/* 차량별 추가 보정값
+   브랜드 기본값에서 차이나는 만큼만 적습니다.
+*/
+/* GLC 아방가르드 */
+.car-adjust[data-brand="벤츠"][data-car="GLC 아방가르드"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
+}
+/* GLC 쿠페 아방가르드 */
+.car-adjust[data-brand="벤츠"][data-car="GLC 쿠페 아방가르드"] {
+  --car-desktop-scale-add: 0;
+  --car-mobile-scale-add: 0;
+}
+/* s클래스 */
 .car-adjust[data-brand="벤츠"][data-car="s클래스"] {
-  --car-desktop-scale: 1.2;
-  --car-desktop-x: 40px;
-  --car-desktop-y: 40px;
-  --car-mobile-scale: 1.05;
-  --car-mobile-x: 18px;
-  --car-mobile-y: 24px;
+  --car-desktop-scale-add: 0;
+  --car-desktop-x-add: 0px;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-x-add: 0px;
+  --car-mobile-y-add: 0px;
 }
 
-@media (max-width: 720px) {
-  .car-adjust:not(.has-own-background) .wizard-car-image--staged img {
+/* =========================================================
+   아우디
+========================================================= */
+
+/* 아우디 브랜드 전체 기본값
+   여기 값을 바꾸면 아우디 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="아우디"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 1.12;
+  --brand-desktop-x: 0px;
+  --brand-desktop-y: 0px;
+
+  /* 모바일 */
+  --brand-mobile-scale: 1;
+  --brand-mobile-x: 0px;
+  --brand-mobile-y: 0px;
+}
+
+/* 차량별 예외 없음 */
+
+/* =========================================================
+   볼보
+========================================================= */
+
+/* 볼보 브랜드 전체 기본값
+   여기 값을 바꾸면 볼보 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="볼보"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 0.96;
+  --brand-desktop-x: 0px;
+  --brand-desktop-y: 18px;
+
+  /* 모바일 */
+  --brand-mobile-scale: 0.84;
+  --brand-mobile-x: 0px;
+  --brand-mobile-y: 12px;
+}
+
+/* 차량별 추가 보정값
+   브랜드 기본값에서 차이나는 만큼만 적습니다.
+*/
+/* XC90 플러그인 하이브리드 */
+.car-adjust[data-brand="볼보"][data-car="XC90 플러그인 하이브리드"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+
+/* =========================================================
+   테슬라
+========================================================= */
+
+/* 테슬라 브랜드 전체 기본값
+   여기 값을 바꾸면 테슬라 전체 차량이 함께 변경됩니다.
+*/
+.car-adjust[data-brand="테슬라"] {
+  /* 데스크톱 */
+  --brand-desktop-scale: 1.34;
+  --brand-desktop-x: 0px;
+  --brand-desktop-y: 48px;
+
+  /* 모바일 */
+  --brand-mobile-scale: 1.12;
+  --brand-mobile-x: 0px;
+  --brand-mobile-y: 28px;
+}
+
+/* 차량별 추가 보정값
+   브랜드 기본값에서 차이나는 만큼만 적습니다.
+*/
+/* 모델Y */
+.car-adjust[data-brand="테슬라"][data-car="모델Y"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+/* 모델Y L */
+.car-adjust[data-brand="테슬라"][data-car="모델Y L"] {
+  --car-desktop-scale-add: 0;
+  --car-desktop-y-add: 0px;
+  --car-mobile-scale-add: 0;
+  --car-mobile-y-add: 0px;
+}
+
+/* =========================================================
+   모바일 적용 (768px 이하)
+========================================================= */
+@media (max-width: 768px) {
+  .wizard-car-card.car-adjust:not(.is-empty):not(.has-own-background) .wizard-car-image--staged img {
     transform:
-      translate(var(--car-mobile-x), var(--car-mobile-y))
-      scale(var(--car-mobile-scale)) !important;
+      translate(
+        calc(var(--brand-mobile-x) + var(--car-mobile-x-add)),
+        calc(var(--brand-mobile-y) + var(--car-mobile-y-add))
+      )
+      scale(calc(var(--brand-mobile-scale) + var(--car-mobile-scale-add))) !important;
   }
 
-  .car-adjust.has-own-background .wizard-car-image--full img {
+  .wizard-car-card.car-adjust.has-own-background .wizard-car-image--full img {
     transform:
-      translate(var(--car-mobile-x), var(--car-mobile-y))
-      scale(var(--car-mobile-scale)) !important;
+      translate(
+        calc(var(--brand-mobile-x) + var(--car-mobile-x-add)),
+        calc(var(--brand-mobile-y) + var(--car-mobile-y-add))
+      )
+      scale(calc(var(--brand-mobile-scale) + var(--car-mobile-scale-add))) !important;
   }
 }
 
