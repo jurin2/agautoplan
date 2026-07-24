@@ -8453,10 +8453,9 @@ const vehicleCatalog = [
     window.addEventListener("mouseup", endDrag);
     scroller.addEventListener("mouseleave", endDrag);
 
-    scroller.addEventListener("touchstart", startDrag, { passive: true });
-    scroller.addEventListener("touchmove", moveDrag, { passive: false });
-    scroller.addEventListener("touchend", endDrag);
-    scroller.addEventListener("touchcancel", endDrag);
+    // 터치 기기에서는 브라우저의 기본 가로 스와이프를 사용합니다.
+    // touchmove에서 preventDefault를 호출하면 일부 모바일 브라우저에서
+    // overflow-x 스크롤이 막힐 수 있으므로 별도 터치 드래그를 등록하지 않습니다.
 
     scroller.addEventListener("click", event => {
       if (scroller.dataset.dragMoved === "true") {
