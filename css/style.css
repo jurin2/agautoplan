@@ -5,9 +5,9 @@
   --car-guide-bottom: 33px; */
 
   /* 모바일용 */
-  /* --car-guide-x1: 14%;
-  --car-guide-x2: 86%;
-  --car-guide-bottom: 50px; */
+  /* --car-guide-x1: 12%;
+  --car-guide-x2: 88%;
+  --car-guide-bottom: 40px; */
 }
 
 .wizard-car-image {
@@ -1707,225 +1707,225 @@ body.loader-active {
   --car-desktop-scale-add: 0.2;
   --car-desktop-x-add: 10px;
   --car-desktop-y-add: 25px;
-  --car-mobile-scale-add: 0;
+  --car-mobile-scale-add: 0.18;
   --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-y-add: 8px;
 }
 /* 그랜저 하이브리드 */
 .car-adjust[data-brand="현대"][data-car="그랜저 하이브리드"] {
   --car-desktop-scale-add: 0.2;
   --car-desktop-x-add: 10px;
   --car-desktop-y-add: 25px;
-  --car-mobile-scale-add: 0;
+  --car-mobile-scale-add: 0.18;
   --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-y-add: 8px;
 }
 /* 베뉴 */
 .car-adjust[data-brand="현대"][data-car="베뉴"] {
   --car-desktop-scale-add: 0.2;
   --car-desktop-x-add: 3px;
   --car-desktop-y-add: 22px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.2;
+  --car-mobile-x-add: -3px;
+  --car-mobile-y-add: 13px;
 }
 /* 스타리아 */
 .car-adjust[data-brand="현대"][data-car="스타리아"] {
   --car-desktop-scale-add: 0.25;
   --car-desktop-x-add: 6px;
   --car-desktop-y-add: 15px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.28;
+  --car-mobile-x-add: -3px;
+  --car-mobile-y-add: 5px;
 }
 /* 스타리아 하이브리드 */
 .car-adjust[data-brand="현대"][data-car="스타리아 하이브리드"] {
   --car-desktop-scale-add: 0.25;
   --car-desktop-x-add: 6px;
   --car-desktop-y-add: 15px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.28;
+  --car-mobile-x-add: -3px;
+  --car-mobile-y-add: 5px;
 }
 /* 싼타페 */
 .car-adjust[data-brand="현대"][data-car="싼타페"] {
-  --car-desktop-scale-add: 0.1;
-  --car-desktop-x-add: 15px;
-  --car-desktop-y-add: 8px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-desktop-scale-add: 0.15;
+  --car-desktop-x-add: 16px;
+  --car-desktop-y-add: 11px;
+  --car-mobile-scale-add: 0.13;
+  --car-mobile-x-add: 5px;
+  --car-mobile-y-add: 4px;
 }
 /* 싼타페 하이브리드 */
 .car-adjust[data-brand="현대"][data-car="싼타페 하이브리드"] {
-  --car-desktop-scale-add: 0.1;
-  --car-desktop-x-add: 15px;
-  --car-desktop-y-add: 8px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-desktop-scale-add: 0.15;
+  --car-desktop-x-add: 16px;
+  --car-desktop-y-add: 11px;
+  --car-mobile-scale-add: 0.13;
+  --car-mobile-x-add: 5px;
+  --car-mobile-y-add: 4px;
 }
 /* 쏘나타 */
 .car-adjust[data-brand="현대"][data-car="쏘나타"] {
   --car-desktop-scale-add: 0.1;
   --car-desktop-x-add: 15px;
   --car-desktop-y-add: 8px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.06;
+  --car-mobile-x-add: 5px;
+  --car-mobile-y-add: 2px;
 }
 /* 쏘나타 하이브리드 */
 .car-adjust[data-brand="현대"][data-car="쏘나타 하이브리드"] {
   --car-desktop-scale-add: 0.1;
   --car-desktop-x-add: 15px;
   --car-desktop-y-add: 8px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.06;
+  --car-mobile-x-add: 5px;
+  --car-mobile-y-add: 2px;
 }
 /* 아반떼 */
 .car-adjust[data-brand="현대"][data-car="아반떼"] {
   --car-desktop-scale-add: 0.1;
   --car-desktop-x-add: 11px;
   --car-desktop-y-add: 8px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.06;
+  --car-mobile-x-add: 1px;
+  --car-mobile-y-add: 2px;
 }
 /* 아반떼 하이브리드 */
 .car-adjust[data-brand="현대"][data-car="아반떼 하이브리드"] {
   --car-desktop-scale-add: 0.1;
   --car-desktop-x-add: 11px;
   --car-desktop-y-add: 8px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.06;
+  --car-mobile-x-add: 1px;
+  --car-mobile-y-add: 2px;
 }
 /* 아이오닉5 */
 .car-adjust[data-brand="현대"][data-car="아이오닉5"] {
   --car-desktop-scale-add: 0.03;
   --car-desktop-x-add: 11px;
   --car-desktop-y-add: 2px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: -0.01;
+  --car-mobile-x-add: 2px;
+  --car-mobile-y-add: -4px;
 }
 /* 아이오닉6 */
 .car-adjust[data-brand="현대"][data-car="아이오닉6"] {
   --car-desktop-scale-add: 0.33;
   --car-desktop-x-add: 12px;
   --car-desktop-y-add: 15px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.32;
+  --car-mobile-x-add: 2px;
+  --car-mobile-y-add: 7px;
 }
 /* 아이오닉9 */
 .car-adjust[data-brand="현대"][data-car="아이오닉9"] {
   --car-desktop-scale-add: 0.2;
   --car-desktop-x-add: 9px;
   --car-desktop-y-add: 5px;
-  --car-mobile-scale-add: 0;
+  --car-mobile-scale-add: 0.15;
   --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-y-add: -2px;
 }
 /* 캐스퍼 */
 .car-adjust[data-brand="현대"][data-car="캐스퍼"] {
   --car-desktop-scale-add: 0.2;
   --car-desktop-x-add: 1px;
   --car-desktop-y-add: 17px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.2;
+  --car-mobile-x-add: -6px;
+  --car-mobile-y-add: 9px;
 }
 /* 캐스퍼 EV */
 .car-adjust[data-brand="현대"][data-car="캐스퍼 EV"] {
   --car-desktop-scale-add: 0.2;
   --car-desktop-x-add: 1px;
   --car-desktop-y-add: 17px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.2;
+  --car-mobile-x-add: -6px;
+  --car-mobile-y-add: 9px;
 }
 /* 코나 */
 .car-adjust[data-brand="현대"][data-car="코나"] {
   --car-desktop-scale-add: 0.08;
   --car-desktop-x-add: 8px;
   --car-desktop-y-add: 3px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.02;
+  --car-mobile-x-add: -1px;
+  --car-mobile-y-add: -3px;
 }
 /* 코나 하이브리드 */
 .car-adjust[data-brand="현대"][data-car="코나 하이브리드"] {
   --car-desktop-scale-add: 0.08;
   --car-desktop-x-add: 8px;
   --car-desktop-y-add: 3px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.02;
+  --car-mobile-x-add: -1px;
+  --car-mobile-y-add: -3px;
 }
 /* 코나 EV */
 .car-adjust[data-brand="현대"][data-car="코나 EV"] {
   --car-desktop-scale-add: 0.08;
   --car-desktop-x-add: 8px;
   --car-desktop-y-add: 3px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.02;
+  --car-mobile-x-add: -1px;
+  --car-mobile-y-add: -3px;
 }
 /* 투싼 */
 .car-adjust[data-brand="현대"][data-car="투싼"] {
   --car-desktop-scale-add: 0.1;
   --car-desktop-x-add: 17px;
   --car-desktop-y-add: -5px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.06;
+  --car-mobile-x-add: 6px;
+  --car-mobile-y-add: -8px;
 }
 /* 투싼 하이브리드 */
 .car-adjust[data-brand="현대"][data-car="투싼 하이브리드"] {
   --car-desktop-scale-add: 0.1;
   --car-desktop-x-add: 17px;
   --car-desktop-y-add: -5px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.06;
+  --car-mobile-x-add: 6px;
+  --car-mobile-y-add: -8px;
 }
 /* 팰리세이드 */
 .car-adjust[data-brand="현대"][data-car="팰리세이드"] {
   --car-desktop-scale-add: 0.12;
   --car-desktop-x-add: 15px;
   --car-desktop-y-add: 10px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.1;
+  --car-mobile-x-add: 4px;
+  --car-mobile-y-add: 1px;
 }
 /* 팰리세이드 하이브리드 */
 .car-adjust[data-brand="현대"][data-car="팰리세이드 하이브리드"] {
   --car-desktop-scale-add: 0.12;
   --car-desktop-x-add: 15px;
   --car-desktop-y-add: 10px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.1;
+  --car-mobile-x-add: 4px;
+  --car-mobile-y-add: 1px;
 }
 /* 포터2 */
 .car-adjust[data-brand="현대"][data-car="포터2"] {
   --car-desktop-scale-add: 0.2;
   --car-desktop-x-add: 14px;
   --car-desktop-y-add: 10px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-mobile-scale-add: 0.18;
+  --car-mobile-x-add: 3px;
+  --car-mobile-y-add: 3px;
 }
 /* 포터2 EV */
 .car-adjust[data-brand="현대"][data-car="포터2 EV"] {
-  --car-desktop-scale-add: 0;
-  --car-desktop-x-add: -7px;
-  --car-desktop-y-add: -7px;
-  --car-mobile-scale-add: 0;
-  --car-mobile-x-add: 0px;
-  --car-mobile-y-add: 0px;
+  --car-desktop-scale-add: 0.2;
+  --car-desktop-x-add: 14px;
+  --car-desktop-y-add: 10px;
+  --car-mobile-scale-add: -0.06;
+  --car-mobile-x-add: -15px;
+  --car-mobile-y-add: -11px;  
 }
 
 /* =========================================================
