@@ -1707,7 +1707,7 @@ body.loader-active {
   --car-desktop-scale-add: 0.2;
   --car-desktop-x-add: 10px;
   --car-desktop-y-add: 25px;
-  --car-mobile-scale-add: 0;
+  --car-mobile-scale-add: 0.1;
   --car-mobile-x-add: 0px;
   --car-mobile-y-add: 0px;
 }
