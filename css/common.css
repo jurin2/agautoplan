@@ -1684,7 +1684,7 @@ body:has(.wizard-page) {
   background:#f5f8fc;
   border:1px solid #dfe6ee;
   border-radius:14px;
-  grid-template-columns:118px 1fr;
+  grid-template-columns:1fr 1fr;
   align-items:center;
   min-height:98px;
   margin:-6px 0 26px;
