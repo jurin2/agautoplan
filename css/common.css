@@ -1694,8 +1694,8 @@ body:has(.wizard-page) {
 .selected-vehicle img {
   object-fit:contain;
   mix-blend-mode:multiply;
-  width:118px;
-  height:90px
+  width:100%;
+  height:auto;
 }
 .selected-vehicle div {
   flex-direction:column;
