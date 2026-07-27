@@ -8057,7 +8057,6 @@ const vehicleCatalog = [
     const brand = currentBrand();
     const paint = currentPaint();
     const paints = currentPaints();
-    const isPaintScrollable = paints.length > 9;
     const useOwnBackground = Boolean(brand?.ownBackground && state.carName);
 
     const carTitleMarkup = `<div class="wizard-car-title ${useOwnBackground ? "wizard-car-title--overlay" : ""}">
@@ -8130,10 +8129,9 @@ const vehicleCatalog = [
           <div class="paint-block ${!state.carName ? "is-disabled-block" : ""}" data-option-section="paint">
             <div class="paint-label">
               <span class="paint-label-title"><b>4</b> 외장 색상${state.carName ? `<em>${paints.length}개</em>` : ""}</span>
-              ${isPaintScrollable ? `<small class="paint-swipe-guide">좌우로 넘겨보세요</small>` : ""}
             </div>
             ${state.carName ? `
-              <div class="wizard-paints${isPaintScrollable ? " is-scrollable" : ""}">
+              <div class="wizard-paints">
                 ${paints.map(item => `
                   <button class="${item.id === state.paintId ? "active" : ""}" type="button"
                     data-paint="${item.id}" aria-label="${item.name}" aria-pressed="${item.id === state.paintId ? "true" : "false"}">
@@ -8470,9 +8468,35 @@ const vehicleCatalog = [
     scroller.dataset.dragReady = "true";
   }
 
-  function initScrollablePaints() {
-    content.querySelectorAll('.wizard-paints.is-scrollable').forEach(enablePaintDragScroll);
+  function updatePaintOverflow(scroller) {
+    if (!scroller) return;
+
+    // 실제 기기에서 색상 버튼이 표시 영역을 넘어가는지 확인합니다.
+    scroller.classList.remove("has-paint-overflow");
+
+    window.requestAnimationFrame(() => {
+      const isOverflowing = scroller.scrollWidth > scroller.clientWidth + 1;
+
+      scroller.classList.toggle("has-paint-overflow", isOverflowing);
+
+      if (isOverflowing) {
+        enablePaintDragScroll(scroller);
+      }
+    });
   }
+
+  function initScrollablePaints() {
+    content.querySelectorAll(".wizard-paints").forEach(updatePaintOverflow);
+  }
+
+  let paintResizeTimer = 0;
+
+  window.addEventListener("resize", () => {
+    window.clearTimeout(paintResizeTimer);
+    paintResizeTimer = window.setTimeout(() => {
+      initScrollablePaints();
+    }, 100);
+  });
 
   function bindStepEvents() {
     initScrollablePaints();
