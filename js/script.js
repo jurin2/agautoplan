@@ -8472,11 +8472,30 @@ const vehicleCatalog = [
   function updatePaintOverflow(scroller) {
     if (!scroller) return;
 
-    // 실제 기기에서 색상 버튼이 표시 영역을 넘어가는지 확인합니다.
+    // 실제 기기에서 색상 버튼이 완전히 다 보이는지 확인합니다.
+    // 마지막 색상이 아주 조금이라도 잘리거나 경계에 애매하게 걸리면
+    // overflow로 판단해서 안내 문구와 스와이프를 활성화합니다.
     scroller.classList.remove("has-paint-overflow");
 
     window.requestAnimationFrame(() => {
-      const isOverflowing = scroller.scrollWidth > scroller.clientWidth + 1;
+      const buttons = scroller.querySelectorAll("button");
+      const lastButton = buttons[buttons.length - 1];
+
+      const hasScrollOverflow = scroller.scrollWidth > scroller.clientWidth + 1;
+
+      let hasPartialClip = false;
+
+      if (lastButton) {
+        const scrollerRect = scroller.getBoundingClientRect();
+        const lastButtonRect = lastButton.getBoundingClientRect();
+
+        // 우측 여유 8px까지 확보되지 않으면 "애매하게 걸린 상태"로 판단합니다.
+        const safeRightEdge = scrollerRect.right - 8;
+
+        hasPartialClip = lastButtonRect.right > safeRightEdge;
+      }
+
+      const isOverflowing = hasScrollOverflow || hasPartialClip;
 
       scroller.classList.toggle("has-paint-overflow", isOverflowing);
 
