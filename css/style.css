@@ -1733,7 +1733,7 @@ body:has(.wizard-page) {
 }
 .loader-symbol i {
     color: #fff;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.08rem;
     background: linear-gradient(145deg, #2f6bff, #5b91ff);
     border-radius: 18px 18px 18px 6px;
     place-items: center;
