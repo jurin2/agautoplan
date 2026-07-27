@@ -3551,10 +3551,13 @@ body.loader-active {
 
 /* =========================================================
    외장 색상 UI 보완
-   - 10개 이상 색상은 스크롤바 없이 좌우 드래그/스와이프
+   - 현재 기기에서 실제로 색상 목록이 잘릴 때만 좌우 스와이프 적용
+   - 실제 overflow 여부는 JS가 .has-paint-overflow 클래스로 표시
+   - overflow가 있을 때만 "좌우로 넘겨보세요" 문구 표시
    - 투톤 색상 스와치는 좌/우 2분할 표시
 ========================================================= */
-.wizard-paints.is-scrollable {
+
+.wizard-paints.has-paint-overflow {
     display: flex !important;
     flex-wrap: nowrap !important;
     justify-content: flex-start !important;
@@ -3573,16 +3576,35 @@ body.loader-active {
     scrollbar-width: none;
 }
 
-.wizard-paints.is-scrollable::-webkit-scrollbar {
+.wizard-paints.has-paint-overflow::-webkit-scrollbar {
     display: none;
 }
 
-.wizard-paints.is-scrollable.is-dragging {
+.wizard-paints.has-paint-overflow.is-dragging {
     cursor: grabbing;
 }
 
-.wizard-paints.is-scrollable button {
+.wizard-paints.has-paint-overflow button {
     flex: 0 0 auto !important;
+}
+
+/* 실제로 색상이 화면 밖으로 잘릴 때만 안내 문구 표시 */
+.paint-block:has(.wizard-paints.has-paint-overflow) {
+    position: relative;
+    padding-bottom: 38px;
+}
+
+.paint-block:has(.wizard-paints.has-paint-overflow)::after {
+    content: "좌우로 넘겨보세요";
+    position: absolute;
+    left: 19px;
+    bottom: 15px;
+    color: #98a2b3;
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+    pointer-events: none;
 }
 
 .wizard-paints button i {
