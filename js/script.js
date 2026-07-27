@@ -8129,6 +8129,7 @@ const vehicleCatalog = [
           <div class="paint-block ${!state.carName ? "is-disabled-block" : ""}" data-option-section="paint">
             <div class="paint-label">
               <span class="paint-label-title"><b>4</b> 외장 색상${state.carName ? `<em>${paints.length}개</em>` : ""}</span>
+              ${state.carName ? `<small class="paint-swipe-guide">좌우로 넘겨보세요</small>` : ""}
             </div>
             ${state.carName ? `
               <div class="wizard-paints">

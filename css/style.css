@@ -3588,25 +3588,6 @@ body.loader-active {
     flex: 0 0 auto !important;
 }
 
-/* 실제로 색상이 화면 밖으로 잘릴 때만 안내 문구 표시 */
-.paint-block:has(.wizard-paints.has-paint-overflow) {
-    position: relative;
-    padding-bottom: 38px;
-}
-
-.paint-block:has(.wizard-paints.has-paint-overflow)::after {
-    content: "좌우로 넘겨보세요";
-    position: absolute;
-    left: 19px;
-    bottom: 15px;
-    color: #98a2b3;
-    font-size: var(--font-size-base);
-    font-weight: 700;
-    line-height: 1.3;
-    white-space: nowrap;
-    pointer-events: none;
-}
-
 .wizard-paints button i {
     background-repeat: no-repeat !important;
 }
@@ -4455,16 +4436,25 @@ body.loader-active {
     --car-y-add: -4%;
 }
 
-/* 외장 색상 개수 및 스와이프 안내 */
+/* 외장 색상 개수 및 스와이프 안내
+   - 공간이 충분하면 "외장 색상 n개" 오른쪽에 한 줄 표시
+   - 한 줄에 들어가지 않으면 안내 문구가 자동으로 다음 줄로 내려감
+   - 실제 색상 목록이 잘릴 때만 안내 문구 표시
+*/
 .paint-label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    column-gap: 12px;
+    row-gap: 6px;
 }
 
 .paint-label-title {
     display: inline-flex;
     align-items: center;
     min-width: 0;
+    flex: 0 1 auto;
 }
 
 .paint-label-title em {
@@ -4477,11 +4467,17 @@ body.loader-active {
 }
 
 .paint-swipe-guide {
-    color: #7a8797;
+    display: none;
+    color: #98a2b3;
     flex: 0 0 auto;
     font-size: var(--font-14);
     font-weight: 700;
+    line-height: 1.3;
     white-space: nowrap;
+}
+
+.paint-block:has(.wizard-paints.has-paint-overflow) .paint-swipe-guide {
+    display: block;
 }
 
 /* =========================================================
@@ -4849,12 +4845,6 @@ body.loader-active {
 
     .completion-details > div {
         grid-template-columns: 78px minmax(0, 1fr);
-    }
-
-    .paint-label {
-        flex-direction: row;
-        align-items: flex-start;
-        gap: 6px;
     }
 
     .selected-vehicle {
