@@ -30,7 +30,7 @@
 .brand-symbol {
     background: var(--blue);
     color: #fff;
-    letter-spacing: -0.08em;
+    /* letter-spacing: -0.08em; */
     border-radius: 10px 10px 10px 3px;
     place-items: center;
     width: 35px;
