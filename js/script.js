@@ -7337,6 +7337,14 @@ const vehicleCatalog = [
 
   function buildEstimatePayload() {
     const paint = currentPaint();
+
+    // 제출 직전에 화면의 지역 선택값을 한 번 더 읽어
+    // state와 실제 select 값이 어긋나는 상황을 방지합니다.
+    const subsidyRegionSelect = document.getElementById("subsidyRegionSelect");
+    if (subsidyRegionSelect && subsidyRegionSelect.value) {
+      state.subsidyRegion = subsidyRegionSelect.value;
+    }
+
     return {
       submittedAt: new Date().toLocaleString("ko-KR"),
       vehicleType: state.market === "domestic" ? "국산차" : "수입차",
@@ -7349,7 +7357,12 @@ const vehicleCatalog = [
       initialCostType: state.initialCost,
       initialCostRate: state.initialCost === "무보증" ? "해당 없음" : state.rate,
       annualMileage: state.mileage,
-      subsidyRegion: isElectricVehicle() ? state.subsidyRegion : "해당 없음",
+
+      // Apps Script의 data.subsidyRegion과 동일한 필드명으로 전송합니다.
+      subsidyRegion: isElectricVehicle()
+        ? (state.subsidyRegion || "")
+        : "해당 없음",
+
       customerName: state.customerName,
       customerPhone: state.customerPhone,
       pageUrl: window.location.href
@@ -7362,8 +7375,26 @@ const vehicleCatalog = [
     }
 
     const payload = buildEstimatePayload();
-    const body = new URLSearchParams();
-    Object.entries(payload).forEach(([key, value]) => body.append(key, value ?? ""));
+
+    // Apps Script의 e.parameter에서 각 값을 안정적으로 읽을 수 있도록
+    // application/x-www-form-urlencoded 형식으로 명시적으로 구성합니다.
+    const body = new URLSearchParams({
+      submittedAt: payload.submittedAt || "",
+      vehicleType: payload.vehicleType || "",
+      brand: payload.brand || "",
+      vehicle: payload.vehicle || "",
+      exteriorColor: payload.exteriorColor || "",
+      model: payload.model || "",
+      trim: payload.trim || "",
+      usageType: payload.usageType || "",
+      initialCostType: payload.initialCostType || "",
+      initialCostRate: payload.initialCostRate || "",
+      annualMileage: payload.annualMileage || "",
+      subsidyRegion: payload.subsidyRegion || "",
+      customerName: payload.customerName || "",
+      customerPhone: payload.customerPhone || "",
+      pageUrl: payload.pageUrl || ""
+    });
 
     await fetch(GOOGLE_APPS_SCRIPT_URL, {
       method: "POST",
@@ -7371,7 +7402,7 @@ const vehicleCatalog = [
       headers: {
         "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
       },
-      body
+      body: body.toString()
     });
   }
 
