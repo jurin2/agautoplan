@@ -1,6 +1,21 @@
 (() => {
   "use strict";
 
+  function resetPageScroll() {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }
+
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+
+  resetPageScroll();
+  window.addEventListener("pageshow", resetPageScroll);
+  window.addEventListener("load", resetPageScroll);
+  window.addEventListener("beforeunload", resetPageScroll);
+
   // 프로젝트 폴더가 어느 경로로 이동해도 에셋을 script.js 위치 기준으로 찾습니다.
   const scriptElement = document.currentScript;
   const scriptUrl = new URL(scriptElement?.src || "js/script.js", document.baseURI);
@@ -18,9 +33,11 @@
   }
   const landingLoader = document.getElementById("landingLoader");
   if (landingLoader) {
+    resetPageScroll();
     document.body.classList.add("loader-active");
 
     window.setTimeout(() => {
+      resetPageScroll();
       landingLoader.setAttribute("aria-hidden", "true");
 
       // 로더의 페이드아웃이 끝난 뒤 스크롤 잠금을 해제해
@@ -28,6 +45,7 @@
       window.setTimeout(() => {
         document.body.classList.remove("loader-active");
         landingLoader.remove();
+        window.requestAnimationFrame(resetPageScroll);
       }, 400);
     }, 2000);
   }
@@ -6344,6 +6362,12 @@ const vehicleCatalog = [
   const trims = ["전체 모델", "2.5 가솔린", "3.5 가솔린", "3.5 가솔린 AWD"];
   const rateOptions = ["10%", "20%", "30%", "40%", "50%"];
   const mileageOptions = ["연 1만km", "연 2만km", "연 3만km", "무제한"];
+  const subsidyRegions = [
+    "서울특별시", "부산광역시", "대구광역시", "인천광역시",
+    "광주광역시", "대전광역시", "울산광역시", "세종특별자치시",
+    "경기도", "강원특별자치도", "충청북도", "충청남도",
+    "전북특별자치도", "전라남도", "경상북도", "경상남도", "제주특별자치도"
+  ];
 
   const state = {
     step: 1,
@@ -6358,6 +6382,7 @@ const vehicleCatalog = [
     initialCost: "",
     rate: "",
     mileage: "",
+    subsidyRegion: "",
     customerName: "",
     customerPhone: "",
     submitted: false
@@ -6369,6 +6394,24 @@ const vehicleCatalog = [
   const backButton = document.getElementById("backButton");
   const nextButton = document.getElementById("nextButton");
   const form = document.getElementById("estimateForm");
+
+
+  function resetSelectionsAfterVehicleChange() {
+    // 차량이 달라지면 이전 차량에 종속된 이후 단계의 선택값을 모두 비웁니다.
+    state.trim = "";
+    state.subTrim = "";
+    state.usage = "";
+    state.initialCost = "";
+    state.rate = "";
+    state.mileage = "";
+    state.subsidyRegion = "";
+    state.customerName = "";
+    state.customerPhone = "";
+    state.submitted = false;
+
+    // 다시 1단계부터 완료해야 다음 단계 탭을 열 수 있도록 합니다.
+    state.maxReachedStep = 1;
+  }
 
   function currentBrands() {
     if (!state.market) return [];
@@ -6382,6 +6425,19 @@ const vehicleCatalog = [
   function currentVehicle() {
     const brand = vehicleCatalog.find(item => item.name === state.brandName);
     return brand?.cars.find(car => car.name === state.carName) || null;
+  }
+
+  function isElectricVehicle() {
+    const carName = state.carName || "";
+    const electricNames = [
+      "아이오닉5", "아이오닉6", "아이오닉9", "캐스퍼 일렉트릭",
+      "코나 일렉트릭", "포터2 일렉트릭", "일렉트리파이드 G80",
+      "GV60", "일렉트리파이드 GV70", "EV3", "EV4", "EV5",
+      "EV6", "EV9", "PV5 카고", "니로 EV", "레이 EV",
+      "무쏘 EV", "토레스 EVX", "모델3", "모델Y", "모델Y L"
+    ];
+
+    return electricNames.includes(carName);
   }
 
   function currentPaints() {
@@ -6652,6 +6708,24 @@ const vehicleCatalog = [
             `).join("")}
           </div>
         </fieldset>
+
+        ${isElectricVehicle() ? `
+          <fieldset class="option-block subsidy-region-block" data-option-section="subsidy-region">
+            <legend><b>4</b> 지역별 보조금</legend>
+            <p class="option-helper">전기차 보조금 확인을 위해 차량 등록 예정 지역을 선택해 주세요.</p>
+            <div class="wizard-select">
+              <select id="subsidyRegionSelect" aria-label="전기차 보조금 지역 선택">
+                <option value="">등록 지역을 선택해 주세요</option>
+                ${subsidyRegions.map(region => `
+                  <option value="${region}" ${state.subsidyRegion === region ? "selected" : ""}>${region}</option>
+                `).join("")}
+              </select>
+            </div>
+            <small class="subsidy-notice">실제 보조금은 차종·세부모델·지자체 예산에 따라 달라질 수 있습니다.</small>
+          </fieldset>
+        ` : ""}
+
+        <p class="validation-message" id="validationMessage"></p>
       </div>
     `;
   }
@@ -6672,6 +6746,7 @@ const vehicleCatalog = [
             <div><dt>세부모델</dt><dd>${state.trim}${state.subTrim ? ` · ${state.subTrim}` : ""}</dd></div>
             <div><dt>이용조건</dt><dd>${state.usage} · ${state.initialCost}${state.rate !== "없음" ? ` ${state.rate}` : ""}</dd></div>
             <div><dt>주행거리</dt><dd>${state.mileage}</dd></div>
+            ${isElectricVehicle() ? `<div><dt>보조금 지역</dt><dd>${state.subsidyRegion}</dd></div>` : ""}
           </dl>
         </div>
 
@@ -6731,6 +6806,7 @@ const vehicleCatalog = [
               <div><dt>이용 방식</dt><dd>${state.usage}</dd></div>
               <div><dt>초기비용</dt><dd>${initialCostText}</dd></div>
               <div><dt>주행거리</dt><dd>${state.mileage}</dd></div>
+              ${isElectricVehicle() ? `<div><dt>보조금 지역</dt><dd>${state.subsidyRegion}</dd></div>` : ""}
             </dl>
           </div>
 
@@ -6799,7 +6875,7 @@ const vehicleCatalog = [
   function scrollToNextSelection(selector) {
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
-        const target = content.querySelector(selector);
+        const target = content.querySelector(selector) || document.querySelector(selector);
         if (!target) return;
 
         target.scrollIntoView({
@@ -6935,10 +7011,15 @@ const vehicleCatalog = [
         const value = button.dataset.value;
 
         if (key === "market") {
+          const marketChanged = state.market !== value;
           state.market = value;
-          state.brandName = "";
-          state.carName = "";
-          state.paintId = "";
+
+          if (marketChanged) {
+            state.brandName = "";
+            state.carName = "";
+            state.paintId = "";
+            resetSelectionsAfterVehicleChange();
+          }
         } else {
           state[key] = value;
           if (key === "initialCost" && value === "무보증") {
@@ -6968,9 +7049,16 @@ const vehicleCatalog = [
 
     content.querySelectorAll(".wizard-brand-grid button[data-brand]").forEach(button => {
       button.addEventListener("click", () => {
-        state.brandName = button.dataset.brand;
-        state.carName = "";
-        state.paintId = "";
+        const nextBrandName = button.dataset.brand;
+        const brandChanged = state.brandName !== nextBrandName;
+        state.brandName = nextBrandName;
+
+        if (brandChanged) {
+          state.carName = "";
+          state.paintId = "";
+          resetSelectionsAfterVehicleChange();
+        }
+
         render();
         scrollToNextSelection('[data-option-section="car"]');
       });
@@ -7010,8 +7098,15 @@ const vehicleCatalog = [
     const carSelect = document.getElementById("carSelect");
     if (carSelect) {
       carSelect.addEventListener("change", () => {
-        state.carName = carSelect.value;
-        state.paintId = "";
+        const nextCarName = carSelect.value;
+        const carChanged = state.carName !== nextCarName;
+        state.carName = nextCarName;
+
+        if (carChanged) {
+          state.paintId = "";
+          resetSelectionsAfterVehicleChange();
+        }
+
         render();
 
         if (state.carName) {
@@ -7034,7 +7129,14 @@ const vehicleCatalog = [
       button.addEventListener("click", () => {
         state.subTrim = button.dataset.subTrim;
         render();
+        scrollToNextSelection("#wizardActions");
       });
+    });
+
+    const subsidyRegionSelect = document.getElementById("subsidyRegionSelect");
+    subsidyRegionSelect?.addEventListener("change", () => {
+      state.subsidyRegion = subsidyRegionSelect.value;
+      showValidation("");
     });
 
     const nameInput = document.getElementById("customerName");
@@ -7074,6 +7176,7 @@ const vehicleCatalog = [
     state.initialCost = "";
     state.rate = "";
     state.mileage = "";
+    state.subsidyRegion = "";
     state.customerName = "";
     state.customerPhone = "";
     state.submitted = false;
@@ -7179,6 +7282,11 @@ const vehicleCatalog = [
         showValidation("연간 주행거리를 선택해 주세요.");
         return false;
       }
+      if (isElectricVehicle() && !state.subsidyRegion) {
+        showValidation("전기차 보조금 확인 지역을 선택해 주세요.");
+        document.getElementById("subsidyRegionSelect")?.focus();
+        return false;
+      }
       return true;
     }
 
@@ -7241,6 +7349,7 @@ const vehicleCatalog = [
       initialCostType: state.initialCost,
       initialCostRate: state.initialCost === "무보증" ? "해당 없음" : state.rate,
       annualMileage: state.mileage,
+      subsidyRegion: isElectricVehicle() ? state.subsidyRegion : "해당 없음",
       customerName: state.customerName,
       customerPhone: state.customerPhone,
       pageUrl: window.location.href
