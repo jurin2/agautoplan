@@ -6355,49 +6355,97 @@ const vehicleCatalog = [
 
   const fallbackImage = "images/g_g90.png";
 
-  // Google Apps Script를 웹앱으로 배포한 뒤 아래 주소만 교체하세요.
-  // 예: https://script.google.com/macros/s/AKfycb.../exec
+  /* ==============================
+     최초 유입 정보 수집
+  ============================== */
+
   function getTrafficInfo() {
     const storageKey = "autojiniTrafficInfo";
+    const params = new URLSearchParams(window.location.search);
+
+    const trackingKeys = [
+      "utm_source",
+      "utm_medium",
+      "utm_campaign",
+      "n_media",
+      "n_query",
+      "n_rank",
+      "n_ad_group",
+      "n_ad",
+      "n_campaign_type",
+      "n_ad_group_type",
+      "n_match"
+    ];
+
+    const hasTrackingParameters = trackingKeys.some(key => params.has(key));
+
+    const makeTrafficInfo = () => ({
+      referrer: document.referrer || "직접 접속",
+      utmSource: params.get("utm_source") || "없음",
+      utmMedium: params.get("utm_medium") || "없음",
+      utmCampaign: params.get("utm_campaign") || "없음",
+      naverMedia: params.get("n_media") || "없음",
+      naverQuery: params.get("n_query") || "없음",
+      naverRank: params.get("n_rank") || "없음",
+      naverAdGroup: params.get("n_ad_group") || "없음",
+      naverAd: params.get("n_ad") || "없음",
+      naverCampaignType: params.get("n_campaign_type") || "없음",
+      naverAdGroupType: params.get("n_ad_group_type") || "없음",
+      naverMatch: params.get("n_match") || "없음"
+    });
+
+    if (hasTrackingParameters) {
+      const currentTraffic = makeTrafficInfo();
+
+      try {
+        sessionStorage.setItem(storageKey, JSON.stringify(currentTraffic));
+      } catch (error) {
+        console.warn("유입 정보를 저장하지 못했습니다.", error);
+      }
+
+      return currentTraffic;
+    }
 
     try {
-      const saved = sessionStorage.getItem(storageKey);
+      const savedTraffic = sessionStorage.getItem(storageKey);
 
-      if (saved) {
-        const parsed = JSON.parse(saved);
+      if (savedTraffic) {
+        const parsed = JSON.parse(savedTraffic);
 
         return {
           referrer: parsed.referrer || "직접 접속",
           utmSource: parsed.utmSource || "없음",
           utmMedium: parsed.utmMedium || "없음",
-          utmCampaign: parsed.utmCampaign || "없음"
+          utmCampaign: parsed.utmCampaign || "없음",
+          naverMedia: parsed.naverMedia || "없음",
+          naverQuery: parsed.naverQuery || "없음",
+          naverRank: parsed.naverRank || "없음",
+          naverAdGroup: parsed.naverAdGroup || "없음",
+          naverAd: parsed.naverAd || "없음",
+          naverCampaignType: parsed.naverCampaignType || "없음",
+          naverAdGroupType: parsed.naverAdGroupType || "없음",
+          naverMatch: parsed.naverMatch || "없음"
         };
       }
     } catch (error) {
       console.warn("저장된 유입 정보를 읽지 못했습니다.", error);
     }
 
-    const params = new URLSearchParams(window.location.search);
-
-    const traffic = {
-      referrer: document.referrer || "직접 접속",
-      utmSource: params.get("utm_source") || "없음",
-      utmMedium: params.get("utm_medium") || "없음",
-      utmCampaign: params.get("utm_campaign") || "없음"
-    };
+    const directTraffic = makeTrafficInfo();
 
     try {
-      sessionStorage.setItem(storageKey, JSON.stringify(traffic));
+      sessionStorage.setItem(storageKey, JSON.stringify(directTraffic));
     } catch (error) {
       console.warn("유입 정보를 저장하지 못했습니다.", error);
     }
 
-    return traffic;
+    return directTraffic;
   }
 
-  // 최초 접속 시점의 유입 정보를 견적 완료 시까지 유지합니다.
   const trafficInfo = getTrafficInfo();
 
+  // Google Apps Script를 웹앱으로 배포한 뒤 아래 주소만 교체하세요.
+  // 예: https://script.google.com/macros/s/AKfycb.../exec
   const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyn-e-8alXP25C8rUrKvDcge8r0L8YPHjJ9ZU4tLH4khosBJ2GgVg5P7B2E0IyyTT-v/exec";
 
   const trims = ["전체 모델", "2.5 가솔린", "3.5 가솔린", "3.5 가솔린 AWD"];
@@ -7407,11 +7455,21 @@ const vehicleCatalog = [
       customerName: state.customerName,
       customerPhone: state.customerPhone,
 
-      // 유입 정보
+      // 기본 유입 정보
       referrer: trafficInfo.referrer,
       utmSource: trafficInfo.utmSource,
       utmMedium: trafficInfo.utmMedium,
-      utmCampaign: trafficInfo.utmCampaign
+      utmCampaign: trafficInfo.utmCampaign,
+
+      // 네이버 파워링크 정보
+      naverMedia: trafficInfo.naverMedia,
+      naverQuery: trafficInfo.naverQuery,
+      naverRank: trafficInfo.naverRank,
+      naverAdGroup: trafficInfo.naverAdGroup,
+      naverAd: trafficInfo.naverAd,
+      naverCampaignType: trafficInfo.naverCampaignType,
+      naverAdGroupType: trafficInfo.naverAdGroupType,
+      naverMatch: trafficInfo.naverMatch
     };
   }
 
@@ -7440,11 +7498,21 @@ const vehicleCatalog = [
       customerName: payload.customerName || "",
       customerPhone: payload.customerPhone || "",
 
-      // 유입 정보
-      referrer: payload.referrer || "",
-      utmSource: payload.utmSource || "",
-      utmMedium: payload.utmMedium || "",
-      utmCampaign: payload.utmCampaign || ""
+      // 기본 유입 정보
+      referrer: payload.referrer || "직접 접속",
+      utmSource: payload.utmSource || "없음",
+      utmMedium: payload.utmMedium || "없음",
+      utmCampaign: payload.utmCampaign || "없음",
+
+      // 네이버 파워링크 정보
+      naverMedia: payload.naverMedia || "없음",
+      naverQuery: payload.naverQuery || "없음",
+      naverRank: payload.naverRank || "없음",
+      naverAdGroup: payload.naverAdGroup || "없음",
+      naverAd: payload.naverAd || "없음",
+      naverCampaignType: payload.naverCampaignType || "없음",
+      naverAdGroupType: payload.naverAdGroupType || "없음",
+      naverMatch: payload.naverMatch || "없음"
     });
 
     await fetch(GOOGLE_APPS_SCRIPT_URL, {
