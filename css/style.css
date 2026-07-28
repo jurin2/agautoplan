@@ -3805,8 +3805,8 @@ body.loader-active {
     --car-x-add: -2%;
     --car-y-add: -1%;
 }
-/* 캐스퍼 EV */
-.car-adjust[data-brand="현대"][data-car="캐스퍼 EV"] {
+/* 캐스퍼 일렉트릭 */
+.car-adjust[data-brand="현대"][data-car="캐스퍼 일렉트릭"] {
     --car-scale-add: 0.1;
     --car-x-add: -2%;
     --car-y-add: -1%;
@@ -3823,8 +3823,8 @@ body.loader-active {
     --car-x-add: -0.5%;
     --car-y-add: -9%;
 }
-/* 코나 EV */
-.car-adjust[data-brand="현대"][data-car="코나 EV"] {
+/* 코나 일렉트릭 */
+.car-adjust[data-brand="현대"][data-car="코나 일렉트릭"] {
     --car-scale-add: -0.12;
     --car-x-add: -0.5%;
     --car-y-add: -9%;
@@ -3859,8 +3859,8 @@ body.loader-active {
     --car-x-add: 0.5%;
     --car-y-add: -5%;
 }
-/* 포터2 EV */
-.car-adjust[data-brand="현대"][data-car="포터2 EV"] {
+/* 포터2 일렉트릭 */
+.car-adjust[data-brand="현대"][data-car="포터2 일렉트릭"] {
     --car-scale-add: -0.2;
     --car-x-add: -4%;
     --car-y-add: -13%;
@@ -3889,8 +3889,8 @@ body.loader-active {
     --car-x-add: 0%;
     --car-y-add: -1%;
 }
-/* G80 EV*/
-.car-adjust[data-brand="제네시스"][data-car="G80 EV"] {
+/* 일렉트리파이드 G80 */
+.car-adjust[data-brand="제네시스"][data-car="일렉트리파이드 G80"] {
     --car-scale-add: -0.08;
     --car-x-add: 0%;
     --car-y-add: -1%;
@@ -3901,8 +3901,8 @@ body.loader-active {
     --car-x-add: 0%;
     --car-y-add: -3%;
 }
-/* GV60 EV */
-.car-adjust[data-brand="제네시스"][data-car="GV60 EV"] {
+/* GV60 */
+.car-adjust[data-brand="제네시스"][data-car="GV60"] {
     --car-scale-add: -0.03;
     --car-x-add: 0%;
     --car-y-add: -3%;
@@ -3913,8 +3913,8 @@ body.loader-active {
     --car-x-add: 0%;
     --car-y-add: 1%;
 }
-/* GV70 EV */
-.car-adjust[data-brand="제네시스"][data-car="GV70 EV"] {
+/* 일렉트리파이드 GV70 */
+.car-adjust[data-brand="제네시스"][data-car="일렉트리파이드 GV70"] {
     --car-scale-add: -0.07;
     --car-x-add: 0%;
     --car-y-add: -4%;
@@ -4027,8 +4027,8 @@ body.loader-active {
     --car-x-add: -0.5%;
     --car-y-add: -3%;
 }
-/* 레이ev */
-.car-adjust[data-brand="기아"][data-car="레이ev"] {
+/* 레이 EV */
+.car-adjust[data-brand="기아"][data-car="레이 EV"] {
     --car-scale-add: 0.12;
     --car-x-add: -0.5%;
     --car-y-add: -3%;
@@ -4123,8 +4123,8 @@ body.loader-active {
     --car-x-add: -3.1%;
     --car-y-add: 5%;
 }
-/* 무쏘ev */
-.car-adjust[data-brand="KGM"][data-car="무쏘ev"] {
+/* 무쏘 EV */
+.car-adjust[data-brand="KGM"][data-car="무쏘 EV"] {
     --car-scale-add: -0.04;
     --car-x-add: -0.5%;
     --car-y-add: 5%;
@@ -4153,8 +4153,8 @@ body.loader-active {
     --car-x-add: 0%;
     --car-y-add: -2%;
 }
-/* 토레스ev */
-.car-adjust[data-brand="KGM"][data-car="토레스ev"] {
+/* 토레스 EVX */
+.car-adjust[data-brand="KGM"][data-car="토레스 EVX"] {
     --car-scale-add: -0.07;
     --car-x-add: 0.5%;
     --car-y-add: -2%;
@@ -4183,33 +4183,33 @@ body.loader-active {
 /* 차량별 추가 보정값
    브랜드 기본값에서 차이나는 만큼만 적습니다.
 */
-/* 그랑콜레오스 */
-.car-adjust[data-brand="르노"][data-car="그랑콜레오스"] {
-    --car-scale-add: 0;
+/* 그랑 콜레오스 */
+.car-adjust[data-brand="르노"][data-car="그랑 콜레오스"] {
+    --car-scale-add: -0.03;
     --car-x-add: 0%;
     --car-y-add: 0%;
 }
-/* 그랑콜레오스 하이브리드 */
-.car-adjust[data-brand="르노"][data-car="그랑콜레오스 하이브리드"] {
-    --car-scale-add: 0;
+/* 그랑 콜레오스 하이브리드 E-Tech */
+.car-adjust[data-brand="르노"][data-car="그랑 콜레오스 하이브리드 E-Tech"] {
+    --car-scale-add: -0.03;
     --car-x-add: 0%;
     --car-y-add: 0%;
 }
 /* 아르카나 */
 .car-adjust[data-brand="르노"][data-car="아르카나"] {
-    --car-scale-add: 0.12;
+    --car-scale-add: 0.07;
     --car-x-add: 0.2%;
     --car-y-add: 4%;
 }
 /* 아르카나 하이브리드 */
 .car-adjust[data-brand="르노"][data-car="아르카나 하이브리드"] {
-    --car-scale-add: 0.12;
+    --car-scale-add: 0.07;
     --car-x-add: 0.2%;
     --car-y-add: 4%;
 }
-/* 필랑트 하이브리드 */
-.car-adjust[data-brand="르노"][data-car="필랑트 하이브리드"] {
-    --car-scale-add: -0.2;
+/* 필랑트 하이브리드 E-Tech */
+.car-adjust[data-brand="르노"][data-car="필랑트 하이브리드 E-Tech"] {
+    --car-scale-add: -0.25;
     --car-x-add: -4.2%;
     --car-y-add: -16%;
 }
@@ -4231,8 +4231,8 @@ body.loader-active {
 /* 차량별 추가 보정값
    브랜드 기본값에서 차이나는 만큼만 적습니다.
 */
-/* 트랙스 */
-.car-adjust[data-brand="쉐보레"][data-car="트랙스"] {
+/* 트랙스 크로스오버 */
+.car-adjust[data-brand="쉐보레"][data-car="트랙스 크로스오버"] {
     --car-scale-add: 0;
     --car-x-add: 0%;
     --car-y-add: 0%;
@@ -4316,19 +4316,19 @@ body.loader-active {
     --car-y-add: 0%;
 }
 /* C클래스 아방가르드 */
-.car-adjust[data-brand="벤츠"][data-car="c클래스 아방가르드"] {
+.car-adjust[data-brand="벤츠"][data-car="C클래스 아방가르드"] {
     --car-scale-add: 0;
     --car-x-add: 0.5%;
     --car-y-add: 0%;
 }
 /* E클래스 아방가르드 */
-.car-adjust[data-brand="벤츠"][data-car="e클래스 아방가르드"] {
+.car-adjust[data-brand="벤츠"][data-car="E클래스 아방가르드"] {
     --car-scale-add: -0.05;
     --car-x-add: 0%;
     --car-y-add: -2%;
 }
 /* E클래스 익스클루시브 */
-.car-adjust[data-brand="벤츠"][data-car="e클래스 익스클루시브"] {
+.car-adjust[data-brand="벤츠"][data-car="E클래스 익스클루시브"] {
     --car-scale-add: -0.05;
     --car-x-add: 0%;
     --car-y-add: -2%;
@@ -4345,8 +4345,8 @@ body.loader-active {
     --car-x-add: 0%;
     --car-y-add: -3%;
 }
-/* s클래스 */
-.car-adjust[data-brand="벤츠"][data-car="s클래스"] {
+/* S클래스 */
+.car-adjust[data-brand="벤츠"][data-car="S클래스"] {
     --car-scale-add: -0.12;
     --car-x-add: 2.8%;
     --car-y-add: -6%;
