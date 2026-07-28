@@ -4890,3 +4890,52 @@ body.loader-active {
     font-size: var(--font-13);
     line-height: 1.5;
 }
+
+/* =========================================================
+   견적 완료 화면 차량 이미지 확대
+   - 데스크톱: 이미지 영역 확대
+   - 모바일: 이미지 위 / 차량 정보 아래 세로 배치
+========================================================= */
+.completion-vehicle {
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 18px;
+    padding: 18px 20px;
+}
+
+.completion-vehicle img {
+    width: 170px;
+    height: 104px;
+    object-fit: contain;
+    object-position: center;
+}
+
+@media (max-width: 480px) {
+    .completion-vehicle {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 18px 16px;
+    }
+
+    .completion-vehicle img {
+        display: block;
+        width: 100%;
+        max-width: 240px;
+        height: 140px;
+        margin: 0 auto;
+        object-fit: contain;
+        object-position: center;
+    }
+
+    .completion-vehicle div {
+        width: 100%;
+        text-align: left;
+    }
+
+    .completion-vehicle span {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+    }
+}
