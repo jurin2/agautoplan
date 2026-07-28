@@ -6357,6 +6357,20 @@ const vehicleCatalog = [
 
   // Google Apps Script를 웹앱으로 배포한 뒤 아래 주소만 교체하세요.
   // 예: https://script.google.com/macros/s/AKfycb.../exec
+  function getTrafficInfo() {
+    const params = new URLSearchParams(window.location.search);
+
+    return {
+      referrer: document.referrer || "직접 접속 또는 확인 불가",
+      utmSource: params.get("utm_source") || "",
+      utmMedium: params.get("utm_medium") || "",
+      utmCampaign: params.get("utm_campaign") || ""
+    };
+  }
+
+  // 페이지를 처음 열었을 때의 유입 정보를 견적 완료 시까지 유지합니다.
+  const trafficInfo = getTrafficInfo();
+
   const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyn-e-8alXP25C8rUrKvDcge8r0L8YPHjJ9ZU4tLH4khosBJ2GgVg5P7B2E0IyyTT-v/exec";
 
   const trims = ["전체 모델", "2.5 가솔린", "3.5 가솔린", "3.5 가솔린 AWD"];
@@ -7365,7 +7379,12 @@ const vehicleCatalog = [
 
       customerName: state.customerName,
       customerPhone: state.customerPhone,
-      pageUrl: window.location.href
+
+      // 유입 정보
+      referrer: trafficInfo.referrer,
+      utmSource: trafficInfo.utmSource,
+      utmMedium: trafficInfo.utmMedium,
+      utmCampaign: trafficInfo.utmCampaign
     };
   }
 
@@ -7393,7 +7412,12 @@ const vehicleCatalog = [
       subsidyRegion: payload.subsidyRegion || "",
       customerName: payload.customerName || "",
       customerPhone: payload.customerPhone || "",
-      pageUrl: payload.pageUrl || ""
+
+      // 유입 정보
+      referrer: payload.referrer || "",
+      utmSource: payload.utmSource || "",
+      utmMedium: payload.utmMedium || "",
+      utmCampaign: payload.utmCampaign || ""
     });
 
     await fetch(GOOGLE_APPS_SCRIPT_URL, {
