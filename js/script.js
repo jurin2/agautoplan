@@ -6444,6 +6444,107 @@ const vehicleCatalog = [
 
   const trafficInfo = getTrafficInfo();
 
+  /* ==============================
+     방문자 및 접속 환경 정보
+  ============================== */
+
+  const AUTOJINI_VISITOR_ID_KEY = "autojiniVisitorId";
+  const AUTOJINI_ENTRY_TIME_KEY = "autojiniEntryTime";
+
+  function getAutojiniVisitorId() {
+    let visitorId = localStorage.getItem(AUTOJINI_VISITOR_ID_KEY);
+
+    if (!visitorId) {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        visitorId = window.crypto.randomUUID();
+      } else {
+        visitorId =
+          "visitor_" +
+          Date.now().toString(36) +
+          "_" +
+          Math.random().toString(36).slice(2, 12);
+      }
+
+      try {
+        localStorage.setItem(AUTOJINI_VISITOR_ID_KEY, visitorId);
+      } catch (error) {
+        console.warn("방문자 ID를 저장하지 못했습니다.", error);
+      }
+    }
+
+    return visitorId;
+  }
+
+  function initializeAutojiniEntryTime() {
+    try {
+      if (!sessionStorage.getItem(AUTOJINI_ENTRY_TIME_KEY)) {
+        sessionStorage.setItem(AUTOJINI_ENTRY_TIME_KEY, String(Date.now()));
+      }
+    } catch (error) {
+      console.warn("접속 시간을 저장하지 못했습니다.", error);
+    }
+  }
+
+  function getAutojiniElapsedSeconds() {
+    try {
+      const entryTime = Number(sessionStorage.getItem(AUTOJINI_ENTRY_TIME_KEY));
+
+      if (!entryTime || Number.isNaN(entryTime)) return 0;
+
+      return Math.max(0, Math.floor((Date.now() - entryTime) / 1000));
+    } catch (error) {
+      console.warn("제출 소요시간을 계산하지 못했습니다.", error);
+      return 0;
+    }
+  }
+
+  async function getAutojiniPublicIp() {
+    const endpoints = [
+      "https://api64.ipify.org?format=json",
+      "https://api.ipify.org?format=json"
+    ];
+
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: "GET",
+          cache: "no-store"
+        });
+
+        if (!response.ok) continue;
+
+        const result = await response.json();
+        if (result && result.ip) return result.ip;
+      } catch (error) {
+        console.warn("IP 조회 실패:", endpoint, error);
+      }
+    }
+
+    return "확인 불가";
+  }
+
+  async function getAutojiniSecurityData() {
+    let timezone = "확인 불가";
+
+    try {
+      timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "확인 불가";
+    } catch (error) {
+      console.warn("시간대를 확인하지 못했습니다.", error);
+    }
+
+    return {
+      ipAddress: await getAutojiniPublicIp(),
+      visitorId: getAutojiniVisitorId(),
+      userAgent: navigator.userAgent || "확인 불가",
+      screenSize: `${window.screen.width}x${window.screen.height}`,
+      timezone: timezone,
+      language: navigator.language || "확인 불가",
+      elapsedSeconds: getAutojiniElapsedSeconds()
+    };
+  }
+
+  initializeAutojiniEntryTime();
+
   // Google Apps Script를 웹앱으로 배포한 뒤 아래 주소만 교체하세요.
   // 예: https://script.google.com/macros/s/AKfycb.../exec
   const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyn-e-8alXP25C8rUrKvDcge8r0L8YPHjJ9ZU4tLH4khosBJ2GgVg5P7B2E0IyyTT-v/exec";
@@ -7461,15 +7562,8 @@ const vehicleCatalog = [
       utmMedium: trafficInfo.utmMedium,
       utmCampaign: trafficInfo.utmCampaign,
 
-      // 네이버 파워링크 정보
-      naverMedia: trafficInfo.naverMedia,
-      naverQuery: trafficInfo.naverQuery,
-      naverRank: trafficInfo.naverRank,
-      naverAdGroup: trafficInfo.naverAdGroup,
-      naverAd: trafficInfo.naverAd,
-      naverCampaignType: trafficInfo.naverCampaignType,
-      naverAdGroupType: trafficInfo.naverAdGroupType,
-      naverMatch: trafficInfo.naverMatch
+      // 보안 정보는 제출 직전에 비동기로 수집해 추가합니다.
+      securityData: null
     };
   }
 
@@ -7479,6 +7573,7 @@ const vehicleCatalog = [
     }
 
     const payload = buildEstimatePayload();
+    const securityData = await getAutojiniSecurityData();
 
     // Apps Script의 e.parameter에서 각 값을 안정적으로 읽을 수 있도록
     // application/x-www-form-urlencoded 형식으로 명시적으로 구성합니다.
@@ -7504,16 +7599,17 @@ const vehicleCatalog = [
       utmMedium: payload.utmMedium || "없음",
       utmCampaign: payload.utmCampaign || "없음",
 
-      // 네이버 파워링크 정보
-      naverMedia: payload.naverMedia || "없음",
-      naverQuery: payload.naverQuery || "없음",
-      naverRank: payload.naverRank || "없음",
-      naverAdGroup: payload.naverAdGroup || "없음",
-      naverAd: payload.naverAd || "없음",
-      naverCampaignType: payload.naverCampaignType || "없음",
-      naverAdGroupType: payload.naverAdGroupType || "없음",
-      naverMatch: payload.naverMatch || "없음"
+      // 방문자 및 접속 환경 정보
+      ipAddress: securityData.ipAddress || "확인 불가",
+      visitorId: securityData.visitorId || "확인 불가",
+      userAgent: securityData.userAgent || "확인 불가",
+      screenSize: securityData.screenSize || "확인 불가",
+      timezone: securityData.timezone || "확인 불가",
+      language: securityData.language || "확인 불가",
+      elapsedSeconds: String(securityData.elapsedSeconds || 0)
     });
+
+    console.log("견적 전송 데이터", Object.fromEntries(body.entries()));
 
     await fetch(GOOGLE_APPS_SCRIPT_URL, {
       method: "POST",
