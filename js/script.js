@@ -6366,15 +6366,7 @@ const vehicleCatalog = [
     const trackingKeys = [
       "utm_source",
       "utm_medium",
-      "utm_campaign",
-      "n_media",
-      "n_query",
-      "n_rank",
-      "n_ad_group",
-      "n_ad",
-      "n_campaign_type",
-      "n_ad_group_type",
-      "n_match"
+      "utm_campaign"
     ];
 
     const hasTrackingParameters = trackingKeys.some(key => params.has(key));
@@ -6383,15 +6375,7 @@ const vehicleCatalog = [
       referrer: document.referrer || "직접 접속",
       utmSource: params.get("utm_source") || "없음",
       utmMedium: params.get("utm_medium") || "없음",
-      utmCampaign: params.get("utm_campaign") || "없음",
-      naverMedia: params.get("n_media") || "없음",
-      naverQuery: params.get("n_query") || "없음",
-      naverRank: params.get("n_rank") || "없음",
-      naverAdGroup: params.get("n_ad_group") || "없음",
-      naverAd: params.get("n_ad") || "없음",
-      naverCampaignType: params.get("n_campaign_type") || "없음",
-      naverAdGroupType: params.get("n_ad_group_type") || "없음",
-      naverMatch: params.get("n_match") || "없음"
+      utmCampaign: params.get("utm_campaign") || "없음"
     });
 
     if (hasTrackingParameters) {
@@ -6416,15 +6400,7 @@ const vehicleCatalog = [
           referrer: parsed.referrer || "직접 접속",
           utmSource: parsed.utmSource || "없음",
           utmMedium: parsed.utmMedium || "없음",
-          utmCampaign: parsed.utmCampaign || "없음",
-          naverMedia: parsed.naverMedia || "없음",
-          naverQuery: parsed.naverQuery || "없음",
-          naverRank: parsed.naverRank || "없음",
-          naverAdGroup: parsed.naverAdGroup || "없음",
-          naverAd: parsed.naverAd || "없음",
-          naverCampaignType: parsed.naverCampaignType || "없음",
-          naverAdGroupType: parsed.naverAdGroupType || "없음",
-          naverMatch: parsed.naverMatch || "없음"
+          utmCampaign: parsed.utmCampaign || "없음"
         };
       }
     } catch (error) {
@@ -6444,26 +6420,27 @@ const vehicleCatalog = [
 
   const trafficInfo = getTrafficInfo();
 
+
   /* ==============================
-     방문자 및 접속 환경 정보
+     방문자 보안 정보 수집
   ============================== */
 
   const AUTOJINI_VISITOR_ID_KEY = "autojiniVisitorId";
   const AUTOJINI_ENTRY_TIME_KEY = "autojiniEntryTime";
 
   function getAutojiniVisitorId() {
-    let visitorId = localStorage.getItem(AUTOJINI_VISITOR_ID_KEY);
+    let visitorId = "";
+
+    try {
+      visitorId = localStorage.getItem(AUTOJINI_VISITOR_ID_KEY) || "";
+    } catch (error) {
+      console.warn("방문자 ID를 읽지 못했습니다.", error);
+    }
 
     if (!visitorId) {
-      if (window.crypto && typeof window.crypto.randomUUID === "function") {
-        visitorId = window.crypto.randomUUID();
-      } else {
-        visitorId =
-          "visitor_" +
-          Date.now().toString(36) +
-          "_" +
-          Math.random().toString(36).slice(2, 12);
-      }
+      visitorId = window.crypto && typeof window.crypto.randomUUID === "function"
+        ? window.crypto.randomUUID()
+        : `visitor_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
 
       try {
         localStorage.setItem(AUTOJINI_VISITOR_ID_KEY, visitorId);
@@ -6481,7 +6458,7 @@ const vehicleCatalog = [
         sessionStorage.setItem(AUTOJINI_ENTRY_TIME_KEY, String(Date.now()));
       }
     } catch (error) {
-      console.warn("접속 시간을 저장하지 못했습니다.", error);
+      console.warn("페이지 접속 시간을 저장하지 못했습니다.", error);
     }
   }
 
@@ -6514,9 +6491,9 @@ const vehicleCatalog = [
         if (!response.ok) continue;
 
         const result = await response.json();
-        if (result && result.ip) return result.ip;
+        if (result && result.ip) return String(result.ip);
       } catch (error) {
-        console.warn("IP 조회 실패:", endpoint, error);
+        console.warn("접속 IP 조회 실패:", endpoint, error);
       }
     }
 
@@ -6532,15 +6509,18 @@ const vehicleCatalog = [
       console.warn("시간대를 확인하지 못했습니다.", error);
     }
 
-    return {
+    const securityData = {
       ipAddress: await getAutojiniPublicIp(),
       visitorId: getAutojiniVisitorId(),
       userAgent: navigator.userAgent || "확인 불가",
       screenSize: `${window.screen.width}x${window.screen.height}`,
-      timezone: timezone,
+      timezone,
       language: navigator.language || "확인 불가",
       elapsedSeconds: getAutojiniElapsedSeconds()
     };
+
+    console.log("AUTOJINI 견적 보안정보", securityData);
+    return securityData;
   }
 
   initializeAutojiniEntryTime();
@@ -7560,10 +7540,7 @@ const vehicleCatalog = [
       referrer: trafficInfo.referrer,
       utmSource: trafficInfo.utmSource,
       utmMedium: trafficInfo.utmMedium,
-      utmCampaign: trafficInfo.utmCampaign,
-
-      // 보안 정보는 제출 직전에 비동기로 수집해 추가합니다.
-      securityData: null
+      utmCampaign: trafficInfo.utmCampaign
     };
   }
 
@@ -7599,7 +7576,7 @@ const vehicleCatalog = [
       utmMedium: payload.utmMedium || "없음",
       utmCampaign: payload.utmCampaign || "없음",
 
-      // 방문자 및 접속 환경 정보
+      // 보안 및 반복 신청 확인 정보
       ipAddress: securityData.ipAddress || "확인 불가",
       visitorId: securityData.visitorId || "확인 불가",
       userAgent: securityData.userAgent || "확인 불가",
@@ -7608,8 +7585,6 @@ const vehicleCatalog = [
       language: securityData.language || "확인 불가",
       elapsedSeconds: String(securityData.elapsedSeconds || 0)
     });
-
-    console.log("견적 전송 데이터", Object.fromEntries(body.entries()));
 
     await fetch(GOOGLE_APPS_SCRIPT_URL, {
       method: "POST",
