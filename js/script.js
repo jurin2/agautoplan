@@ -6358,17 +6358,44 @@ const vehicleCatalog = [
   // Google Apps Script를 웹앱으로 배포한 뒤 아래 주소만 교체하세요.
   // 예: https://script.google.com/macros/s/AKfycb.../exec
   function getTrafficInfo() {
+    const storageKey = "autojiniTrafficInfo";
+
+    try {
+      const saved = sessionStorage.getItem(storageKey);
+
+      if (saved) {
+        const parsed = JSON.parse(saved);
+
+        return {
+          referrer: parsed.referrer || "직접 접속",
+          utmSource: parsed.utmSource || "없음",
+          utmMedium: parsed.utmMedium || "없음",
+          utmCampaign: parsed.utmCampaign || "없음"
+        };
+      }
+    } catch (error) {
+      console.warn("저장된 유입 정보를 읽지 못했습니다.", error);
+    }
+
     const params = new URLSearchParams(window.location.search);
 
-    return {
-      referrer: document.referrer || "직접 접속 또는 확인 불가",
-      utmSource: params.get("utm_source") || "",
-      utmMedium: params.get("utm_medium") || "",
-      utmCampaign: params.get("utm_campaign") || ""
+    const traffic = {
+      referrer: document.referrer || "직접 접속",
+      utmSource: params.get("utm_source") || "없음",
+      utmMedium: params.get("utm_medium") || "없음",
+      utmCampaign: params.get("utm_campaign") || "없음"
     };
+
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify(traffic));
+    } catch (error) {
+      console.warn("유입 정보를 저장하지 못했습니다.", error);
+    }
+
+    return traffic;
   }
 
-  // 페이지를 처음 열었을 때의 유입 정보를 견적 완료 시까지 유지합니다.
+  // 최초 접속 시점의 유입 정보를 견적 완료 시까지 유지합니다.
   const trafficInfo = getTrafficInfo();
 
   const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyn-e-8alXP25C8rUrKvDcge8r0L8YPHjJ9ZU4tLH4khosBJ2GgVg5P7B2E0IyyTT-v/exec";
