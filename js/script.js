@@ -7017,7 +7017,7 @@ const vehicleCatalog = [
           </label>
           <label>
             연락처
-            <input id="customerPhone" name="phone" inputmode="numeric" placeholder="휴대전화·지역번호·인터넷전화"
+            <input id="customerPhone" name="phone" inputmode="numeric" placeholder="연락처를 입력해 주세요"
               autocomplete="tel" maxlength="13" aria-describedby="customerPhoneError" required>
             <span class="field-error" id="customerPhoneError" aria-live="polite"></span>
           </label>
