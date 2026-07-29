@@ -5329,3 +5329,22 @@ body.loader-active {
         font-size: 1rem;
     }
 }
+
+/* ==============================
+   Footer Mobile Layout
+============================== */
+@media (max-width: 768px) {
+    .company-info {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .company-info > div,
+    .company-info > div.wide {
+        grid-column: auto;
+    }
+
+    .company-info > div {
+        gap: 4px;
+    }
+}
