@@ -6510,47 +6510,9 @@ const vehicleCatalog = [
     }
   }
 
-  async function getAutojiniPublicIp() {
-    const endpoints = [
-      "https://api64.ipify.org?format=json",
-      "https://api.ipify.org?format=json"
-    ];
-
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: "GET",
-          cache: "no-store"
-        });
-
-        if (!response.ok) continue;
-
-        const result = await response.json();
-        if (result && result.ip) return String(result.ip);
-      } catch (error) {
-        console.warn("접속 IP 조회 실패:", endpoint, error);
-      }
-    }
-
-    return "확인 불가";
-  }
-
-  async function getAutojiniSecurityData() {
-    let timezone = "확인 불가";
-
-    try {
-      timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "확인 불가";
-    } catch (error) {
-      console.warn("시간대를 확인하지 못했습니다.", error);
-    }
-
+  function getAutojiniSecurityData() {
     const securityData = {
-      ipAddress: await getAutojiniPublicIp(),
       visitorId: getAutojiniVisitorId(),
-      userAgent: navigator.userAgent || "확인 불가",
-      screenSize: `${window.screen.width}x${window.screen.height}`,
-      timezone,
-      language: navigator.language || "확인 불가",
       elapsedSeconds: getAutojiniElapsedSeconds()
     };
 
@@ -7845,7 +7807,7 @@ const vehicleCatalog = [
     }
 
     const payload = buildEstimatePayload();
-    const securityData = await getAutojiniSecurityData();
+    const securityData = getAutojiniSecurityData();
 
     // Apps Script의 e.parameter에서 각 값을 안정적으로 읽을 수 있도록
     // application/x-www-form-urlencoded 형식으로 명시적으로 구성합니다.
@@ -7871,13 +7833,8 @@ const vehicleCatalog = [
       utmMedium: payload.utmMedium || "없음",
       utmCampaign: payload.utmCampaign || "없음",
 
-      // 보안 및 반복 신청 확인 정보
-      ipAddress: securityData.ipAddress || "확인 불가",
+      // 방문자 ID 기반 반복 신청 확인 정보
       visitorId: securityData.visitorId || "확인 불가",
-      userAgent: securityData.userAgent || "확인 불가",
-      screenSize: securityData.screenSize || "확인 불가",
-      timezone: securityData.timezone || "확인 불가",
-      language: securityData.language || "확인 불가",
       elapsedSeconds: String(securityData.elapsedSeconds || 0)
     });
 
