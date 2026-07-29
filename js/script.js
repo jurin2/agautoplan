@@ -7407,31 +7407,23 @@ const vehicleCatalog = [
     const phoneInput = document.getElementById("customerPhone");
 
     if (nameInput) {
-      let isNameComposing = false;
-
-      const sanitizeNameInput = input => {
-        input.value = input.value
-          .replace(/[^가-힣A-Za-z\s]/g, "")
-          .replace(/\s{2,}/g, " ")
-          .replace(/^\s+/, "");
-
-        setFieldError(input, document.getElementById("customerNameError"), "");
+      const clearNameError = () => {
+        setFieldError(nameInput, document.getElementById("customerNameError"), "");
         showValidation("");
       };
 
-      // 한글 조합 중에는 값을 정리하지 않아야 자음·모음 입력이 정상적으로 완성됩니다.
-      nameInput.addEventListener("compositionstart", () => {
-        isNameComposing = true;
-      });
+      const sanitizeCompletedName = input => {
+        input.value = input.value
+          .replace(/[^가-힣A-Za-z\s]/g, "")
+          .replace(/\s{2,}/g, " ")
+          .trim();
+      };
 
-      nameInput.addEventListener("compositionend", event => {
-        isNameComposing = false;
-        sanitizeNameInput(event.target);
-      });
-
-      nameInput.addEventListener("input", event => {
-        if (isNameComposing || event.isComposing) return;
-        sanitizeNameInput(event.target);
+      // 모바일 한글 키보드는 조합 완료 직후에도 input 이벤트가 연속 발생할 수 있습니다.
+      // 입력 중에는 값을 수정하지 않고 오류 문구만 지우며, 포커스를 벗어날 때만 정리합니다.
+      nameInput.addEventListener("input", clearNameError);
+      nameInput.addEventListener("blur", event => {
+        sanitizeCompletedName(event.target);
       });
     }
 
