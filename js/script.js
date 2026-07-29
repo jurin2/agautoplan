@@ -6567,6 +6567,58 @@ const vehicleCatalog = [
   const trims = ["전체 모델", "2.5 가솔린", "3.5 가솔린", "3.5 가솔린 AWD"];
   const rateOptions = ["10%", "20%", "30%", "40%", "50%"];
   const mileageOptions = ["연 1만km", "연 2만km", "연 3만km", "무제한"];
+
+  // 사이트에는 제조사 공식 트림명을 그대로 표시하고,
+  // 관리자 메일 전송 시에만 한글 보조명을 함께 붙입니다.
+  const trimMailNameMap = {
+    "Techno": "테크노",
+    "Iconic": "아이코닉",
+    "Esprit Alpine": "에스프리 알핀",
+    "Esprit Alpine 1955": "에스프리 알핀 1955",
+    "Escapade 파노라마 선루프 버전": "에스카파드 파노라마 선루프 버전",
+    "Escapade 루프박스 버전": "에스카파드 루프박스 버전",
+    "Modern": "모던",
+    "Modern Plus": "모던 플러스",
+    "Premium": "프리미엄",
+    "Prestige": "프레스티지",
+    "Inspiration": "인스퍼레이션",
+    "Exclusive": "익스클루시브",
+    "Black Exterior": "블랙 익스테리어",
+    "N Line": "엔 라인",
+    "GT-Line": "지티 라인",
+    "M Sport": "엠 스포츠",
+    "M Sport Pro": "엠 스포츠 프로",
+    "M Sport Pro Special Edition": "엠 스포츠 프로 스페셜 에디션",
+    "M Sport M Performance Parts Edition": "엠 스포츠 엠 퍼포먼스 파츠 에디션",
+    "AMG Line": "에이엠지 라인",
+    "Avantgarde": "아방가르드",
+    "Advanced": "어드밴스드",
+    "Night Edition": "나이트 에디션",
+    "Ultra Bright": "울트라 브라이트",
+    "Ultra Dark": "울트라 다크",
+    "Black Edition": "블랙 에디션",
+    "Premier": "프리미어",
+    "Redline": "레드라인",
+    "ACTIV": "액티브",
+    "Basic": "베이직",
+    "Black": "블랙",
+    "FLUX": "플럭스",
+    "H-Pick": "에이치 픽",
+    "E-Lite": "이 라이트",
+    "E-Value +": "이 밸류 플러스",
+    "xLine (7인승)": "엑스라인 (7인승)",
+    "X-Line": "엑스 라인"
+  };
+
+  function getTrimTextForMail(trimName) {
+    const koreanName = trimMailNameMap[trimName];
+
+    if (!koreanName || koreanName === trimName) {
+      return trimName;
+    }
+
+    return `${trimName} (${koreanName})`;
+  }
   const subsidyRegions = [
     "서울특별시", "부산광역시", "대구광역시", "인천광역시",
     "광주광역시", "대전광역시", "울산광역시", "세종특별자치시",
@@ -7648,7 +7700,7 @@ const vehicleCatalog = [
       vehicle: state.carName,
       exteriorColor: paint?.name || "",
       model: state.trim,
-      trim: state.subTrim,
+      trim: getTrimTextForMail(state.subTrim),
       usageType: state.usage,
       initialCostType: state.initialCost,
       initialCostRate: ["무보증", "상담 후 결정"].includes(state.initialCost) ? "해당 없음" : state.rate,
