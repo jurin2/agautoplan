@@ -45,7 +45,10 @@
         <span class="brand-symbol">A</span>
         <span>AUTOGENIE</span>
       </a>
-      <span class="header-caption">빠른 견적</span>
+      <button type="button" class="header-caption header-vehicle-search-button" id="openVehicleSearch" aria-haspopup="dialog" aria-controls="vehicleSearchModal">
+        <span class="header-vehicle-search-button__desktop">차량 통합검색</span>
+        <span class="header-vehicle-search-button__mobile">차량 검색</span>
+      </button>
     </header>
 
     <section class="wizard-hero">
@@ -135,7 +138,29 @@
 
 
 
-    <dialog class="privacy-modal" id="privacyModal" aria-labelledby="privacyModalTitle">
+  
+
+  <dialog class="vehicle-search-modal" id="vehicleSearchModal" aria-labelledby="vehicleSearchModalTitle">
+    <div class="vehicle-search-modal__panel">
+      <div class="vehicle-search-modal__header">
+        <div>
+          <h2 id="vehicleSearchModalTitle">차량 통합검색</h2>
+          <p>차량명을 검색하면 차량 구분과 브랜드가 자동으로 선택됩니다.</p>
+        </div>
+        <button type="button" class="vehicle-search-modal__close" id="closeVehicleSearch" aria-label="차량 검색 닫기">×</button>
+      </div>
+      <div class="vehicle-search-modal__body">
+        <div class="vehicle-search-field">
+          <input type="search" id="globalVehicleSearch" placeholder="예: 아반떼, 그랑 콜레오스, 모델Y" autocomplete="off" aria-controls="globalVehicleSearchList">
+          <button type="button" class="vehicle-search-clear" id="globalVehicleSearchClear" aria-label="검색어 지우기" hidden>×</button>
+        </div>
+        <p class="vehicle-search-result" id="globalVehicleSearchResult" aria-live="polite">차량명을 입력해 주세요.</p>
+        <div class="vehicle-search-list integrated-vehicle-search__list" id="globalVehicleSearchList" hidden></div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="privacy-modal" id="privacyModal" aria-labelledby="privacyModalTitle">
       <div class="privacy-modal__inner">
         <div class="privacy-modal__header">
           <h2 id="privacyModalTitle">개인정보 수집 및 이용 동의</h2>

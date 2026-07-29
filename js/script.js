@@ -6809,24 +6809,6 @@ const vehicleCatalog = [
           <p>차량 종류부터 색상까지 순서대로 선택할 수 있습니다.</p>
         </div>
 
-        <section class="integrated-vehicle-search" aria-labelledby="integratedVehicleSearchTitle">
-          <div class="integrated-vehicle-search__head">
-            <strong id="integratedVehicleSearchTitle">차량명으로 바로 검색</strong>
-          </div>
-          <div class="vehicle-search-field">
-            <input
-              type="search"
-              id="integratedVehicleSearch"
-              placeholder="예: 아반떼, 그랑 콜레오스, 모델Y"
-              autocomplete="off"
-              aria-controls="integratedVehicleSearchList"
-            >
-            <button type="button" class="vehicle-search-clear" id="integratedVehicleSearchClear" aria-label="검색어 지우기" hidden>×</button>
-          </div>
-          <p class="vehicle-search-result" id="integratedVehicleSearchResult" aria-live="polite"></p>
-          <div class="vehicle-search-list integrated-vehicle-search__list" id="integratedVehicleSearchList" hidden></div>
-        </section>
-
         <fieldset class="option-block" data-option-section="market">
           <legend><b>1</b> 차량 구분</legend>
           <div class="segment-control two-column" data-group="market">
@@ -7378,101 +7360,6 @@ const vehicleCatalog = [
     });
 
     const carSelect = document.getElementById("carSelect");
-    const integratedVehicleSearch = document.getElementById("integratedVehicleSearch");
-    const integratedVehicleSearchClear = document.getElementById("integratedVehicleSearchClear");
-    const integratedVehicleSearchResult = document.getElementById("integratedVehicleSearchResult");
-    const integratedVehicleSearchList = document.getElementById("integratedVehicleSearchList");
-
-    if (
-      integratedVehicleSearch &&
-      integratedVehicleSearchClear &&
-      integratedVehicleSearchResult &&
-      integratedVehicleSearchList
-    ) {
-      const allVehicleSearchItems = vehicleCatalog.flatMap(brandItem =>
-        brandItem.cars.map(carItem => ({
-          market: brandItem.market,
-          brandName: brandItem.name,
-          brandShort: brandItem.short,
-          carName: carItem.name
-        }))
-      );
-
-      const updateIntegratedVehicleSearch = () => {
-        const keyword = integratedVehicleSearch.value.trim().toLocaleLowerCase("ko-KR");
-        integratedVehicleSearchClear.hidden = !integratedVehicleSearch.value;
-
-        if (!keyword) {
-          integratedVehicleSearchResult.textContent = "";
-          integratedVehicleSearchList.innerHTML = "";
-          integratedVehicleSearchList.hidden = true;
-          return;
-        }
-
-        const results = allVehicleSearchItems.filter(item =>
-          `${item.brandName} ${item.brandShort} ${item.carName}`
-            .toLocaleLowerCase("ko-KR")
-            .includes(keyword)
-        );
-
-        integratedVehicleSearchResult.textContent = results.length
-          ? `${results.length}대의 차량을 찾았습니다.`
-          : "일치하는 차량이 없습니다.";
-
-        integratedVehicleSearchList.innerHTML = results.map(item => `
-          <button
-            type="button"
-            class="vehicle-search-item integrated-vehicle-search__item"
-            data-integrated-market="${item.market}"
-            data-integrated-brand="${item.brandName}"
-            data-integrated-car="${item.carName}"
-          >
-            <strong>${item.carName}</strong>
-            <span>${item.brandName} · ${item.market === "domestic" ? "국산차" : "수입차"}</span>
-          </button>
-        `).join("");
-        integratedVehicleSearchList.hidden = results.length === 0;
-      };
-
-      integratedVehicleSearch.addEventListener("input", updateIntegratedVehicleSearch);
-      integratedVehicleSearch.addEventListener("search", updateIntegratedVehicleSearch);
-      integratedVehicleSearchClear.addEventListener("click", () => {
-        integratedVehicleSearch.value = "";
-        updateIntegratedVehicleSearch();
-        integratedVehicleSearch.focus();
-      });
-
-      integratedVehicleSearchList.addEventListener("click", event => {
-        const button = event.target.closest("[data-integrated-car]");
-        if (!button) return;
-
-        const nextMarket = button.dataset.integratedMarket;
-        const nextBrandName = button.dataset.integratedBrand;
-        const nextCarName = button.dataset.integratedCar;
-        const vehicleChanged =
-          state.market !== nextMarket ||
-          state.brandName !== nextBrandName ||
-          state.carName !== nextCarName;
-
-        state.market = nextMarket;
-        state.brandName = nextBrandName;
-        state.carName = nextCarName;
-        state.paintId = "";
-
-        if (vehicleChanged) {
-          resetSelectionsAfterVehicleChange();
-        }
-
-        render();
-        window.requestAnimationFrame(() => {
-          document.querySelector('[data-option-section="paint"]')?.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-          });
-        });
-      });
-    }
-
     if (carSelect) {
       carSelect.addEventListener("change", () => {
         const nextCarName = carSelect.value;
@@ -7564,7 +7451,116 @@ const vehicleCatalog = [
       });
     }
 
-    const privacyModal = document.getElementById("privacyModal");
+  
+  const vehicleSearchModal = document.getElementById("vehicleSearchModal");
+  const openVehicleSearchButton = document.getElementById("openVehicleSearch");
+  const closeVehicleSearchButton = document.getElementById("closeVehicleSearch");
+  const globalVehicleSearch = document.getElementById("globalVehicleSearch");
+  const globalVehicleSearchClear = document.getElementById("globalVehicleSearchClear");
+  const globalVehicleSearchResult = document.getElementById("globalVehicleSearchResult");
+  const globalVehicleSearchList = document.getElementById("globalVehicleSearchList");
+
+  const allVehicleSearchItems = vehicleCatalog.flatMap(brandItem =>
+    brandItem.cars.map(carItem => ({
+      market: brandItem.market,
+      brandName: brandItem.name,
+      brandShort: brandItem.short,
+      carName: carItem.name
+    }))
+  );
+
+  function resetGlobalVehicleSearch() {
+    if (!globalVehicleSearch || !globalVehicleSearchClear || !globalVehicleSearchResult || !globalVehicleSearchList) return;
+    globalVehicleSearch.value = "";
+    globalVehicleSearchClear.hidden = true;
+    globalVehicleSearchResult.textContent = "차량명을 입력해 주세요.";
+    globalVehicleSearchList.innerHTML = "";
+    globalVehicleSearchList.hidden = true;
+  }
+
+  function updateGlobalVehicleSearch() {
+    if (!globalVehicleSearch || !globalVehicleSearchClear || !globalVehicleSearchResult || !globalVehicleSearchList) return;
+    const keyword = globalVehicleSearch.value.trim().toLocaleLowerCase("ko-KR");
+    globalVehicleSearchClear.hidden = !globalVehicleSearch.value;
+
+    if (!keyword) {
+      globalVehicleSearchResult.textContent = "차량명을 입력해 주세요.";
+      globalVehicleSearchList.innerHTML = "";
+      globalVehicleSearchList.hidden = true;
+      return;
+    }
+
+    const results = allVehicleSearchItems.filter(item =>
+      `${item.brandName} ${item.brandShort} ${item.carName}`
+        .toLocaleLowerCase("ko-KR")
+        .includes(keyword)
+    );
+
+    globalVehicleSearchResult.textContent = results.length
+      ? `${results.length}대의 차량을 찾았습니다.`
+      : "일치하는 차량이 없습니다.";
+
+    globalVehicleSearchList.innerHTML = results.map(item => `
+      <button type="button" class="vehicle-search-item integrated-vehicle-search__item"
+        data-global-market="${item.market}"
+        data-global-brand="${item.brandName}"
+        data-global-car="${item.carName}">
+        <strong>${item.carName}</strong>
+        <span>${item.brandName} · ${item.market === "domestic" ? "국산차" : "수입차"}</span>
+      </button>
+    `).join("");
+    globalVehicleSearchList.hidden = results.length === 0;
+  }
+
+  openVehicleSearchButton?.addEventListener("click", () => {
+    resetGlobalVehicleSearch();
+    vehicleSearchModal?.showModal();
+    window.setTimeout(() => globalVehicleSearch?.focus(), 30);
+  });
+
+  closeVehicleSearchButton?.addEventListener("click", () => vehicleSearchModal?.close());
+  globalVehicleSearch?.addEventListener("input", updateGlobalVehicleSearch);
+  globalVehicleSearch?.addEventListener("search", updateGlobalVehicleSearch);
+  globalVehicleSearchClear?.addEventListener("click", () => {
+    resetGlobalVehicleSearch();
+    globalVehicleSearch?.focus();
+  });
+
+  globalVehicleSearchList?.addEventListener("click", event => {
+    const button = event.target.closest("[data-global-car]");
+    if (!button) return;
+
+    const nextMarket = button.dataset.globalMarket;
+    const nextBrandName = button.dataset.globalBrand;
+    const nextCarName = button.dataset.globalCar;
+    const vehicleChanged =
+      state.market !== nextMarket ||
+      state.brandName !== nextBrandName ||
+      state.carName !== nextCarName;
+
+    state.market = nextMarket;
+    state.brandName = nextBrandName;
+    state.carName = nextCarName;
+    state.paintId = "";
+    state.step = 1;
+
+    if (vehicleChanged) resetSelectionsAfterVehicleChange();
+
+    vehicleSearchModal?.close();
+    render();
+    window.requestAnimationFrame(() => {
+      document.querySelector('[data-option-section="paint"]')?.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    });
+  });
+
+  vehicleSearchModal?.addEventListener("click", event => {
+    if (event.target === vehicleSearchModal) vehicleSearchModal.close();
+  });
+
+  const privacyModal = document.getElementById("privacyModal");
     const privacyOpenButton = document.getElementById("privacyOpenButton");
 
     privacyOpenButton?.addEventListener("click", () => {

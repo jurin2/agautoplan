@@ -5348,3 +5348,213 @@ body.loader-active {
         gap: 4px;
     }
 }
+
+
+/* ==============================
+   Header Vehicle Search Modal
+============================== */
+.header-vehicle-search-button {
+    appearance: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+.header-vehicle-search-button__mobile {
+    display: none;
+}
+.vehicle-search-modal {
+    position: fixed;
+    inset: 0;
+    width: min(520px, calc(100% - 32px));
+    max-width: none;
+    height: min(460px, calc(100dvh - 32px));
+    max-height: none;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 20px;
+    background: transparent;
+    overflow: visible;
+}
+.vehicle-search-modal::backdrop {
+    background: rgba(12, 26, 45, .62);
+    backdrop-filter: blur(4px);
+}
+.vehicle-search-modal__panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: none;
+    border-radius: 20px;
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 24px 70px rgba(12, 29, 52, .28);
+}
+.vehicle-search-modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 22px 18px;
+    border-bottom: 1px solid #e4eaf2;
+}
+.vehicle-search-modal__header h2 {
+    margin: 0;
+    color: #172a45;
+    font-size: 1.25rem;
+    font-weight: 850;
+}
+.vehicle-search-modal__header p {
+    margin: 6px 0 0;
+    color: #718197;
+    font-size: .875rem;
+    line-height: 1.5;
+}
+.vehicle-search-modal__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: #f1f5fa;
+    color: #60738c;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+.vehicle-search-modal__body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    padding: 20px 22px 24px;
+    overflow: hidden;
+}
+.vehicle-search-modal .vehicle-search-list {
+    flex: 1;
+    min-height: 0;
+    margin-top: 12px;
+    padding-right: 4px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    align-content: start;
+    grid-auto-rows: min-content;
+}
+.vehicle-search-modal .vehicle-search-result {
+    flex: 0 0 20px;
+}
+.vehicle-search-modal .vehicle-search-item {
+    min-height: 62px;
+    padding: 14px 16px;
+}
+@media (max-width: 560px) {
+    .header-vehicle-search-button__desktop {
+        display: none;
+    }
+    .header-vehicle-search-button__mobile {
+        display: inline;
+    }
+    .vehicle-search-modal {
+        width: calc(100% - 24px);
+        height: min(430px, calc(100dvh - 24px));
+        max-height: none;
+    }
+    .vehicle-search-modal__panel {
+        height: 100%;
+        max-height: none;
+        border-radius: 16px;
+    }
+    .vehicle-search-modal__header {
+        padding: 18px 18px 15px;
+    }
+    .vehicle-search-modal__body {
+        padding: 17px 18px 20px;
+    }
+}
+
+/* ==============================
+   Vehicle Search Modal - Result Area Fix
+============================== */
+.vehicle-search-modal .integrated-vehicle-search__list,
+.vehicle-search-modal .vehicle-search-list {
+    max-height: none;
+}
+
+.vehicle-search-modal .vehicle-search-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    overflow-y: auto;
+}
+
+.vehicle-search-modal .integrated-vehicle-search__item {
+    flex-direction: row;
+    align-items: center;
+}
+
+@media (max-width: 560px) {
+    .vehicle-search-modal {
+        inset: 16px;
+        width: auto;
+        height: auto;
+        max-height: calc(100dvh - 32px);
+        margin: auto;
+        border-radius: 16px;
+    }
+
+    .vehicle-search-modal__panel {
+        height: min(560px, calc(100dvh - 32px));
+        max-height: calc(100dvh - 32px);
+    }
+
+    .vehicle-search-modal .integrated-vehicle-search__item {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .vehicle-search-modal .integrated-vehicle-search__item strong {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .vehicle-search-modal .integrated-vehicle-search__item span {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+}
+
+/* ==============================
+   Vehicle Search Modal - True Viewport Center
+============================== */
+.vehicle-search-modal {
+    inset: auto;
+    top: 50%;
+    left: 50%;
+    width: min(520px, calc(100vw - 32px));
+    height: min(460px, calc(100dvh - 32px));
+    margin: 0;
+    transform: translate(-50%, -50%);
+}
+
+@media (max-width: 560px) {
+    .vehicle-search-modal {
+        inset: auto;
+        top: 50%;
+        left: 50%;
+        width: calc(100vw - 32px);
+        height: min(560px, calc(100dvh - 32px));
+        max-height: calc(100dvh - 32px);
+        margin: 0;
+        transform: translate(-50%, -50%);
+    }
+
+    .vehicle-search-modal__panel {
+        width: 100%;
+        height: 100%;
+        max-height: none;
+    }
+}
