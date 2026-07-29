@@ -6973,7 +6973,7 @@ const vehicleCatalog = [
             <p class="option-helper">전기차 보조금 확인을 위해 차량 등록 예정 지역을 선택해 주세요.</p>
             <div class="wizard-select">
               <select id="subsidyRegionSelect" aria-label="전기차 보조금 지역 선택">
-                <option value="">등록 지역을 선택해 주세요</option>
+                <option value="" selected disabled hidden>등록 지역을 선택해 주세요</option>
                 ${subsidyRegions.map(region => `
                   <option value="${region}" ${state.subsidyRegion === region ? "selected" : ""}>${region}</option>
                 `).join("")}
