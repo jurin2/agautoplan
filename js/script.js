@@ -557,6 +557,7 @@ const vehicleCatalog = [
               "에스",
               "익스클루시브",
               "인스퍼레이션",
+              "N Line"
             ]
           }
         ],
@@ -701,6 +702,11 @@ const vehicleCatalog = [
               "모던",
               "인스퍼레이션"
             ]
+          },{
+            "name": "1.6 가솔린 N라인",
+            "trims": [
+              "N라인"
+            ]
           }
         ],
         "paints": [
@@ -758,6 +764,11 @@ const vehicleCatalog = [
               "모던 라이트",
               "모던",
               "인스퍼레이션"
+            ]
+          },{
+            "name": "1.6 HEV N라인",
+            "trims": [
+              "N라인"
             ]
           }
         ],
@@ -1205,11 +1216,23 @@ const vehicleCatalog = [
             ]
           },
           {
+            "name": "1.6 가솔린 터보 N라인",
+            "trims": [
+              "N Line"
+            ]
+          },
+          {
             "name": "1.6 가솔린 터보 4WD",
             "trims": [
               "Premium",
               "Inspiration",
               "Black Exterior"
+            ]
+          },
+          {
+            "name": "1.6 가솔린 터보 4WD N라인",
+            "trims": [
+              "N Line"
             ]
           }
         ],
@@ -2010,7 +2033,7 @@ const vehicleCatalog = [
         "name": "일렉트리파이드 G80",
         "detailModels": [
           {
-            "name": "EV 87.2kWh",
+            "name": "EV 94.5kWh",
             "trims": [
               "기본모델"
             ]
@@ -2086,6 +2109,19 @@ const vehicleCatalog = [
           },
           {
             "name": "3.5 가솔린 터보 AWD",
+            "trims": [
+              "기본모델",
+              "Black"
+            ]
+          },
+          {
+            "name": "3.5 가솔린 터보 MHEV",
+            "trims": [
+              "기본모델"
+            ]
+          },
+          {
+            "name": "3.5 가솔린 터보 MHEV AWD",
             "trims": [
               "기본모델",
               "Black"
@@ -4085,7 +4121,7 @@ const vehicleCatalog = [
             ]
           },
           {
-            "name": "1.6 HEV 7인승",
+            "name": "1.6 HEV 9인승",
             "trims": [
               "프레스티지",
               "노블레스",
@@ -4650,8 +4686,8 @@ const vehicleCatalog = [
           {
             "name": "EV 80.6kWh 밴",
             "trims": [
-              "E5",
-              "E7"
+              "TV5",
+              "TV7"
             ]
           }
         ],
@@ -5783,8 +5819,7 @@ const vehicleCatalog = [
             "name": "S 450 4MATIC 가솔린",
             "trims": [
               "A/T",
-              "노블레스",
-              "시그니처"
+              "Night Edition"
             ]
           }
         ],
@@ -6852,14 +6887,14 @@ const vehicleCatalog = [
 
         <fieldset class="option-block" data-option-section="initialCost">
           <legend><b>2</b> 초기비용</legend>
-          <div class="segment-control three-column" data-group="initialCost">
-            ${["무보증", "선수금", "보증금"].map(value => `
+          <div class="segment-control two-column" data-group="initialCost">
+            ${["무보증", "선수금", "보증금", "상담 후 결정"].map(value => `
               <button class="${state.initialCost === value ? "active" : ""}" type="button" data-value="${value}">${value}</button>
             `).join("")}
           </div>
         </fieldset>
 
-        ${state.initialCost && state.initialCost !== "무보증" ? `
+        ${state.initialCost && !["무보증", "상담 후 결정"].includes(state.initialCost) ? `
           <fieldset class="option-block conditional-block" data-option-section="rate">
             <legend>${state.initialCost} 비율</legend>
             <div class="rate-grid" data-group="rate">
@@ -6914,7 +6949,7 @@ const vehicleCatalog = [
           <dl>
             <div><dt>차량</dt><dd>${state.brandName} ${state.carName} · ${currentPaint().name}</dd></div>
             <div><dt>세부모델</dt><dd>${state.trim}${state.subTrim ? ` · ${state.subTrim}` : ""}</dd></div>
-            <div><dt>이용조건</dt><dd>${state.usage} · ${state.initialCost}${state.rate !== "없음" ? ` ${state.rate}` : ""}</dd></div>
+            <div><dt>이용조건</dt><dd>${state.usage} · ${state.initialCost}${!["무보증", "상담 후 결정"].includes(state.initialCost) && state.rate ? ` ${state.rate}` : ""}</dd></div>
             <div><dt>주행거리</dt><dd>${state.mileage}</dd></div>
             ${isElectricVehicle() ? `<div><dt>보조금 지역</dt><dd>${state.subsidyRegion}</dd></div>` : ""}
           </dl>
@@ -6949,7 +6984,7 @@ const vehicleCatalog = [
 
   function renderComplete() {
     const paint = currentPaint();
-    const initialCostText = state.initialCost === "무보증"
+    const initialCostText = ["무보증", "상담 후 결정"].includes(state.initialCost)
       ? state.initialCost
       : `${state.initialCost}${state.rate ? ` ${state.rate}` : ""}`;
 
@@ -7195,10 +7230,10 @@ const vehicleCatalog = [
           }
         } else {
           state[key] = value;
-          if (key === "initialCost" && value === "무보증") {
+          if (key === "initialCost" && ["무보증", "상담 후 결정"].includes(value)) {
             state.rate = "없음";
           }
-          if (key === "initialCost" && value !== "무보증" && state.rate === "없음") {
+          if (key === "initialCost" && !["무보증", "상담 후 결정"].includes(value) && state.rate === "없음") {
             state.rate = "10%";
           }
         }
@@ -7210,7 +7245,7 @@ const vehicleCatalog = [
           scrollToNextSelection('[data-option-section="initialCost"]');
         } else if (key === "initialCost") {
           scrollToNextSelection(
-            value === "무보증"
+            ["무보증", "상담 후 결정"].includes(value)
               ? '[data-option-section="mileage"]'
               : '[data-option-section="rate"]'
           );
@@ -7454,7 +7489,7 @@ const vehicleCatalog = [
         showValidation("초기비용 조건을 선택해 주세요.");
         return false;
       }
-      if (state.initialCost !== "무보증" && !state.rate) {
+      if (!["무보증", "상담 후 결정"].includes(state.initialCost) && !state.rate) {
         showValidation(`${state.initialCost} 비율을 선택해 주세요.`);
         return false;
       }
@@ -7535,7 +7570,7 @@ const vehicleCatalog = [
       trim: state.subTrim,
       usageType: state.usage,
       initialCostType: state.initialCost,
-      initialCostRate: state.initialCost === "무보증" ? "해당 없음" : state.rate,
+      initialCostRate: ["무보증", "상담 후 결정"].includes(state.initialCost) ? "해당 없음" : state.rate,
       annualMileage: state.mileage,
 
       // Apps Script의 data.subsidyRegion과 동일한 필드명으로 전송합니다.
