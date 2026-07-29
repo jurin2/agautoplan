@@ -4940,7 +4940,6 @@ body.loader-active {
     }
 }
 
-
 /* ==============================
    개인정보 동의 및 팝업
 ============================== */
@@ -4964,7 +4963,7 @@ body.loader-active {
     flex: 0 0 auto;
     padding: 2px 0;
     border: 0;
-    border-bottom: 1px solid currentColor;
+    /* border-bottom: 1px solid currentColor; */
     background: transparent;
     color: var(--blue);
     font-family: inherit;
@@ -5029,8 +5028,10 @@ body.loader-active {
 }
 
 .privacy-modal__close {
-    display: inline-grid;
-    place-items: center;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex: 0 0 auto;
     width: 36px;
     height: 36px;
@@ -5040,9 +5041,29 @@ body.loader-active {
     background: #f4f7fb;
     color: #667085;
     font-family: inherit;
-    font-size: 1.75rem;
-    line-height: 1;
+    font-size: 0;
+    line-height: 0;
     cursor: pointer;
+}
+
+.privacy-modal__close::before,
+.privacy-modal__close::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+}
+
+.privacy-modal__close::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.privacy-modal__close::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 .privacy-modal__content {
@@ -5105,7 +5126,6 @@ body.loader-active {
     }
 
     .privacy-open-button {
-        margin-top: 1px;
         font-size: var(--font-13);
     }
 
