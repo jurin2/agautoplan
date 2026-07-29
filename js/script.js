@@ -7407,6 +7407,8 @@ const vehicleCatalog = [
     const phoneInput = document.getElementById("customerPhone");
 
     if (nameInput) {
+      let isNameComposing = false;
+
       const clearNameError = () => {
         setFieldError(nameInput, document.getElementById("customerNameError"), "");
         showValidation("");
@@ -7419,10 +7421,24 @@ const vehicleCatalog = [
           .trim();
       };
 
-      // 모바일 한글 키보드는 조합 완료 직후에도 input 이벤트가 연속 발생할 수 있습니다.
-      // 입력 중에는 값을 수정하지 않고 오류 문구만 지우며, 포커스를 벗어날 때만 정리합니다.
-      nameInput.addEventListener("input", clearNameError);
+      // 모바일 한글 키보드는 조합 도중 input/compositionend가 여러 번 발생할 수 있습니다.
+      // 입력 중에는 value를 절대 다시 쓰지 않고 오류 표시만 지웁니다.
+      nameInput.addEventListener("compositionstart", () => {
+        isNameComposing = true;
+      });
+
+      nameInput.addEventListener("compositionend", () => {
+        isNameComposing = false;
+        clearNameError();
+      });
+
+      nameInput.addEventListener("input", () => {
+        clearNameError();
+      });
+
+      // 글자 조합이 모두 끝나고 입력란을 벗어날 때만 값을 정리합니다.
       nameInput.addEventListener("blur", event => {
+        if (isNameComposing) return;
         sanitizeCompletedName(event.target);
       });
     }
