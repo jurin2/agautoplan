@@ -1117,7 +1117,7 @@ body:has(.wizard-page) {
     }
 }
 .step-heading {
-    margin-bottom: 29px;
+    margin-bottom: 20px;
 }
 .step-heading > span {
     color: var(--blue);
@@ -5150,5 +5150,182 @@ body.loader-active {
 
     .privacy-modal__footer {
         padding: 14px 18px 18px;
+    }
+}
+
+.integrated-vehicle-search {
+    margin-bottom: 24px;
+    padding: 18px;
+    border: 1px solid #dbe4ef;
+    border-radius: 16px;
+    background: #f8faff;
+}
+.integrated-vehicle-search__head {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+.integrated-vehicle-search__head strong {
+    color: #1f3046;
+    font-size: 1rem;
+    font-weight: 800;
+}
+.integrated-vehicle-search__head span {
+    color: #7a899c;
+    font-size: 0.875rem;
+    line-height: 1.45;
+}
+.integrated-vehicle-search__list {
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+.integrated-vehicle-search__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.integrated-vehicle-search__item strong {
+    color: inherit;
+    font-size: 1rem;
+}
+.integrated-vehicle-search__item span {
+    flex-shrink: 0;
+    color: #7b899a;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+@media (max-width: 480px) {
+    .integrated-vehicle-search {
+        padding: 16px;
+    }
+    .integrated-vehicle-search__item {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .integrated-vehicle-search__item span {
+        flex-shrink: 1;
+    }
+}
+
+/* ==============================
+   Vehicle Search
+============================== */
+.vehicle-search-wrap {
+    margin-bottom: 12px;
+}
+.vehicle-search-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #586a80;
+    font-size: var(--font-size-base);
+    font-weight: 750;
+}
+.vehicle-search-field {
+    position: relative;
+}
+.vehicle-search-field input {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 44px 0 16px;
+    border: 1px solid #dbe4ef;
+    border-radius: 12px;
+    background: #fff;
+    color: #1f3046;
+    font: inherit;
+    outline: 0;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+.vehicle-search-field input::-webkit-search-decoration,
+.vehicle-search-field input::-webkit-search-cancel-button,
+.vehicle-search-field input::-webkit-search-results-button,
+.vehicle-search-field input::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+}
+.vehicle-search-field input::placeholder {
+    color: #9aa7b7;
+}
+.vehicle-search-field input:focus {
+    border-color: #2f6bff;
+    box-shadow: 0 0 0 3px #2f6bff1f;
+}
+.vehicle-search-clear {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #2f6bff;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+.vehicle-search-clear[hidden] {
+    display: none;
+}
+.vehicle-search-result {
+    /* min-height: 20px; */
+    margin: 6px 2px 0;
+    color: #75859a;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.vehicle-search-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+}
+.vehicle-search-list[hidden] {
+    display: none;
+}
+.vehicle-search-item {
+    width: 100%;
+    min-height: 48px;
+    padding: 11px 14px;
+    border: 1px solid #dbe4ef;
+    border-radius: 10px;
+    background: #fff;
+    color: #263a52;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+.vehicle-search-item:hover,
+.vehicle-search-item:focus-visible {
+    border-color: #2f6bff;
+    background: #f5f8ff;
+    color: #2f6bff;
+    outline: 0;
+}
+.wizard-select select:disabled {
+    cursor: not-allowed;
+    color: #9aa7b7;
+    background-color: #f5f7fa;
+}
+
+@media (max-width: 480px) {
+    .vehicle-search-field input {
+        min-height: 50px;
+        font-size: 1rem;
     }
 }
