@@ -1531,6 +1531,10 @@ body:has(.wizard-page) {
 }
 .wizard-spacer {
     height: 86px;
+    flex-shrink: 0;
+}
+.wizard-spacer[hidden] {
+    display: none;
 }
 .wizard-actions {
     z-index: 30;

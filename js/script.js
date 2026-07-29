@@ -6596,6 +6596,7 @@ const vehicleCatalog = [
   const content = document.getElementById("wizardContent");
   const indicator = document.getElementById("stepIndicator");
   const actions = document.getElementById("wizardActions");
+  const spacer = document.querySelector(".wizard-spacer");
   const backButton = document.getElementById("backButton");
   const nextButton = document.getElementById("nextButton");
   const form = document.getElementById("estimateForm");
@@ -6964,7 +6965,7 @@ const vehicleCatalog = [
           </label>
           <label>
             연락처
-            <input id="customerPhone" name="phone" inputmode="numeric" placeholder="010-0000-0000"
+            <input id="customerPhone" name="phone" inputmode="numeric" placeholder="휴대전화·지역번호·인터넷전화"
               autocomplete="tel" maxlength="13" aria-describedby="customerPhoneError" required>
             <span class="field-error" id="customerPhoneError" aria-live="polite"></span>
           </label>
@@ -7027,6 +7028,7 @@ const vehicleCatalog = [
           </div>
         </section>
 
+        <div class="wizard-spacer wizard-spacer--complete" aria-hidden="true"></div>
         <button type="button" id="restartButton">견적신청완료</button>
       </div>
     `;
@@ -7046,6 +7048,7 @@ const vehicleCatalog = [
     if (state.submitted) {
       indicator.hidden = true;
       actions.hidden = true;
+      spacer.hidden = true;
       content.innerHTML = renderComplete();
       bindCompleteEvents();
       return;
@@ -7053,6 +7056,7 @@ const vehicleCatalog = [
 
     indicator.hidden = false;
     actions.hidden = false;
+    spacer.hidden = false;
 
     const renderers = [renderStepOne, renderStepTwo, renderStepThree, renderStepFour];
     content.innerHTML = renderers[state.step - 1]();
@@ -7350,10 +7354,34 @@ const vehicleCatalog = [
     const nameInput = document.getElementById("customerName");
     const phoneInput = document.getElementById("customerPhone");
 
-    nameInput?.addEventListener("input", () => {
-      setFieldError(nameInput, document.getElementById("customerNameError"), "");
-      showValidation("");
-    });
+    if (nameInput) {
+      let isNameComposing = false;
+
+      const sanitizeNameInput = input => {
+        input.value = input.value
+          .replace(/[^가-힣A-Za-z\s]/g, "")
+          .replace(/\s{2,}/g, " ")
+          .replace(/^\s+/, "");
+
+        setFieldError(input, document.getElementById("customerNameError"), "");
+        showValidation("");
+      };
+
+      // 한글 조합 중에는 값을 정리하지 않아야 자음·모음 입력이 정상적으로 완성됩니다.
+      nameInput.addEventListener("compositionstart", () => {
+        isNameComposing = true;
+      });
+
+      nameInput.addEventListener("compositionend", event => {
+        isNameComposing = false;
+        sanitizeNameInput(event.target);
+      });
+
+      nameInput.addEventListener("input", event => {
+        if (isNameComposing || event.isComposing) return;
+        sanitizeNameInput(event.target);
+      });
+    }
 
     if (phoneInput) {
       phoneInput.addEventListener("input", event => {
@@ -7406,10 +7434,27 @@ const vehicleCatalog = [
 
   function formatPhone(event) {
     const digits = event.target.value.replace(/\D/g, "").slice(0, 11);
+
+    // 서울 지역번호(02)는 앞자리가 2자리이고, 그 외 번호는 앞자리가 3자리입니다.
+    if (digits.startsWith("02")) {
+      if (digits.length <= 2) {
+        event.target.value = digits;
+      } else if (digits.length <= 5) {
+        event.target.value = `${digits.slice(0, 2)}-${digits.slice(2)}`;
+      } else if (digits.length <= 9) {
+        event.target.value = `${digits.slice(0, 2)}-${digits.slice(2, 5)}-${digits.slice(5)}`;
+      } else {
+        event.target.value = `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6)}`;
+      }
+      return;
+    }
+
     if (digits.length <= 3) {
       event.target.value = digits;
-    } else if (digits.length <= 7) {
+    } else if (digits.length <= 6) {
       event.target.value = `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    } else if (digits.length <= 10) {
+      event.target.value = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
     } else {
       event.target.value = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
     }
@@ -7437,14 +7482,52 @@ const vehicleCatalog = [
 
   function isValidCustomerName(value) {
     const name = value.trim().replace(/\s+/g, " ");
+    const normalizedName = name.toLowerCase().replace(/\s/g, "");
     const koreanName = /^[가-힣]{2,10}$/;
     const englishName = /^[A-Za-z]{2,20}(?: [A-Za-z]{2,20}){0,3}$/;
-    return koreanName.test(name) || englishName.test(name);
+
+    // 대표적인 테스트·장난 입력과 동일 문자 반복을 차단합니다.
+    const blockedNames = [
+      "테스트", "홍길동", "아무개", "관리자", "운영자", "담당자",
+      "test", "tester", "admin", "administrator", "asdf", "qwer", "abc"
+    ];
+    const isRepeatedCharacter = /^(.)\1+$/.test(normalizedName);
+    const isBlockedName = blockedNames.includes(normalizedName);
+
+    return (koreanName.test(name) || englishName.test(name))
+      && !isRepeatedCharacter
+      && !isBlockedName;
   }
 
-  function isValidMobilePhone(value) {
+  function isValidContactPhone(value) {
     const digits = value.replace(/\D/g, "");
-    return /^010\d{8}$/.test(digits);
+
+    // 휴대전화 010, 인터넷전화 070, 서울 02, 기타 국내 지역번호를 허용합니다.
+    const isMobile = /^010\d{8}$/.test(digits);
+    const isInternetPhone = /^070\d{8}$/.test(digits);
+    const isSeoulLandline = /^02\d{7,8}$/.test(digits);
+    const isRegionalLandline = /^0(?:3[1-3]|4[1-4]|5[1-5]|6[1-4])\d{7,8}$/.test(digits);
+
+    if (!(isMobile || isInternetPhone || isSeoulLandline || isRegionalLandline)) {
+      return false;
+    }
+
+    const prefixLength = digits.startsWith("02") ? 2 : 3;
+    const subscriberNumber = digits.slice(prefixLength);
+    const lastNumber = subscriberNumber.slice(-4);
+    const middleNumber = subscriberNumber.slice(0, -4);
+
+    // 010-1111-3846 또는 010-3846-1111처럼 한쪽 번호만 반복되는 경우는 허용합니다.
+    // 010-1111-2222처럼 가운데와 끝 번호가 모두 단일 숫자 반복인 경우만 차단합니다.
+    const isRepeatedGroup = number => number.length >= 3 && /^(\d)\1+$/.test(number);
+    const hasRepeatedBothGroups = isRepeatedGroup(middleNumber) && isRepeatedGroup(lastNumber);
+
+    // 대표적인 순차형 테스트 번호는 차단합니다.
+    const blockedNumbers = [
+      "1234567", "7654321", "12341234", "12345678", "87654321"
+    ];
+
+    return !hasRepeatedBothGroups && !blockedNumbers.includes(subscriberNumber);
   }
 
   function validateCurrentStep() {
@@ -7515,17 +7598,15 @@ const vehicleCatalog = [
       clearCustomerErrors();
 
       if (!isValidCustomerName(name.value)) {
-        const message = "한글 이름 2~10자 또는 영문 이름을 정확히 입력해 주세요.";
+        const message = "올바른 성함을 입력해 주세요.";
         setFieldError(name, nameError, message);
-        showValidation(message);
         name.focus();
         return false;
       }
 
-      if (!isValidMobilePhone(phone.value)) {
-        const message = "010으로 시작하는 휴대전화 번호 11자리를 입력해 주세요.";
+      if (!isValidContactPhone(phone.value)) {
+        const message = "올바른 연락처를 입력해 주세요.";
         setFieldError(phone, phoneError, message);
-        showValidation(message);
         phone.focus();
         return false;
       }
