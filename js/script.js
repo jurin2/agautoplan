@@ -6935,10 +6935,13 @@ const vehicleCatalog = [
           </label>
         </div>
 
-        <label class="wizard-privacy">
-          <input id="privacyAgree" type="checkbox" required>
-          개인정보 수집 및 이용에 동의합니다.
-        </label>
+        <div class="wizard-privacy-row">
+          <label class="wizard-privacy">
+            <input id="privacyAgree" type="checkbox" required checked>
+            <span>개인정보 수집 및 이용에 동의합니다.</span>
+          </label>
+          <button type="button" class="privacy-open-button" id="privacyOpenButton" aria-haspopup="dialog" aria-controls="privacyModal">내용보기</button>
+        </div>
         <p class="validation-message" id="validationMessage"></p>
       </div>
     `;
@@ -7324,6 +7327,13 @@ const vehicleCatalog = [
         showValidation("");
       });
     }
+
+    const privacyModal = document.getElementById("privacyModal");
+    const privacyOpenButton = document.getElementById("privacyOpenButton");
+
+    privacyOpenButton?.addEventListener("click", () => {
+      if (privacyModal?.showModal) privacyModal.showModal();
+    });
   }
 
   function resetWizardToStart() {
@@ -7595,6 +7605,24 @@ const vehicleCatalog = [
       body: body.toString()
     });
   }
+
+
+  const privacyModal = document.getElementById("privacyModal");
+
+  document.querySelectorAll("[data-privacy-close]").forEach(button => {
+    button.addEventListener("click", () => privacyModal?.close());
+  });
+
+  privacyModal?.addEventListener("click", event => {
+    const rect = privacyModal.getBoundingClientRect();
+    const clickedOutside =
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom;
+
+    if (clickedOutside) privacyModal.close();
+  });
 
 
   indicator.addEventListener("click", event => {
