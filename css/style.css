@@ -772,6 +772,25 @@ main {
     font-size: var(--font-size-base);
     gap: 8px;
 }
+.brand-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+}
+.brand-copy__name {
+    color: #17345c;
+    font-size: 1rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+}
+.brand-copy__sub {
+    color: #17345c;
+    margin-top: 4px;
+    font-size: 0.8125rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+}
 .brand-symbol {
     border-radius: 8px 8px 8px 3px;
     width: 31px;
@@ -1187,6 +1206,11 @@ body:has(.wizard-page) {
 .three-column {
     grid-template-columns: repeat(3, 1fr);
 }
+.usage-row button {
+    white-space: nowrap;
+    font-size: 0.875rem;
+    padding: 0 6px;
+}
 .segment-control button,
 .rate-grid button,
 .mileage-grid button {
@@ -1213,21 +1237,100 @@ body:has(.wizard-page) {
     display: grid;
 }
 .wizard-brand-grid button {
-    color: #475467;
+    color: #333;
     cursor: pointer;
-    min-height: 54px;
-    font-size: var(--font-size-base);
+    min-height: 72px;
+    font-size: var(--font-14);
     background: #fff;
     border: 1px solid #dfe4eb;
     border-radius: 9px;
-    padding: 7px 3px;
-    font-weight: 850;
+    padding: 10px 6px 5px;
+    font-weight: 400;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 .wizard-brand-grid small {
     color: #98a2b3;
     font-size: var(--font-size-base);
     margin-bottom: 2px;
     display: block;
+}
+.brand-logo-box {
+    width: 100%;
+    min-height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.brand-logo-box img {
+    display: block;
+    width: auto;
+    max-width: 100px;
+    height: auto;
+    max-height: 25px;
+    object-fit: contain;
+}
+.wizard-brand-grid button[data-brand="현대"] .brand-logo-box img {
+    transform: scale(1) !important;
+    transform-origin: center !important;
+}
+.wizard-brand-grid button[data-brand="제네시스"] .brand-logo-box img {
+    transform: scale(1.5) !important;
+    transform-origin: center !important;
+}
+.wizard-brand-grid button[data-brand="기아"] .brand-logo-box img {
+    transform: scale(1.2) !important;
+    transform-origin: center !important;
+}
+.wizard-brand-grid button[data-brand="KGM"] .brand-logo-box img {
+    transform: scale(1.2) !important;
+    transform-origin: center !important;
+}
+.wizard-brand-grid button[data-brand="르노"] .brand-logo-box img {
+    transform: scale(1.2) !important;
+    transform-origin: center !important;
+}
+.wizard-brand-grid button[data-brand="쉐보레"] .brand-logo-box img {
+    transform: scale(1.2) !important;
+    transform-origin: center !important;
+}
+.wizard-brand-grid button[data-brand="BMW"] .brand-logo-box img {
+    transform: scale(1.4) !important;
+    transform-origin: center !important;
+}
+.wizard-brand-grid button[data-brand="벤츠"] .brand-logo-box img {
+    transform: scale(1.2) !important;
+    transform-origin: center !important;
+}
+.wizard-brand-grid button[data-brand="아우디"] .brand-logo-box img {
+    transform: scale(1.2) !important;
+    transform-origin: center !important;
+}
+.wizard-brand-grid button[data-brand="볼보"] .brand-logo-box img {
+    transform: scale(1.5) !important;
+    transform-origin: center !important;
+}
+.wizard-brand-grid button[data-brand="테슬라"] .brand-logo-box img {
+    transform: scale(1.5) !important;
+    transform-origin: center !important;
+}
+
+.brand-logo-box.is-light-logo {
+    background: #1f3046;
+    border-radius: 8px;
+    padding: 6px 8px;
+}
+
+.brand-logo-box.is-light-logo img {
+    max-width: 92px;
+    max-height: 16px;
+}
+.brand-label {
+    display: block;
+    line-height: 1.25;
 }
 .wizard-brand-grid button.active {
     border-color: var(--blue);
@@ -1261,6 +1364,90 @@ body:has(.wizard-page) {
     padding: 0 40px 0 14px;
     font-weight: 800;
 }
+.vehicle-card-list {
+    gap: 12px;
+    display: grid;
+}
+.vehicle-card-item {
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border: 1px solid #d9dee6;
+    border-radius: 22px;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 96px;
+    padding: 16px 20px;
+    display: flex;
+    box-shadow: 0 8px 18px rgba(23, 39, 60, 0.04);
+    overflow: hidden;
+}
+.vehicle-card-item.active {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 2px rgba(47, 107, 255, 0.12);
+}
+.vehicle-card-item__name {
+    color: #111827;
+    font-size: var(--font-20);
+    font-weight: 900;
+    line-height: 1.3;
+}
+.vehicle-card-item__thumb {
+    flex: 0 0 156px;
+    justify-content: flex-end;
+    align-items: center;
+    display: flex;
+}
+.vehicle-card-item__thumb img {
+    width: 100%;
+    max-width: 156px;
+    max-height: 72px;
+    object-fit: contain;
+    transform: scale(1.5);
+}
+
+/* 차량 카드 이미지 개별 수정 */
+.vehicle-card-item[data-brand="현대"] .vehicle-card-item__thumb img {
+    transform: scale(1.7);
+}
+.vehicle-card-item[data-car-card="포터2"] .vehicle-card-item__thumb img {
+    transform: scale(2.1);
+}
+.vehicle-card-item[data-brand="제네시스"] .vehicle-card-item__thumb img {
+    transform: scale(1.8);
+}
+.vehicle-card-item[data-brand="르노"] .vehicle-card-item__thumb img {
+    transform: translateY(5px) scale(1.7);
+}
+.vehicle-card-item[data-car-card="아르카나"] .vehicle-card-item__thumb img {
+    transform: translateY(5px) scale(1.8);
+}
+.vehicle-card-item[data-car-card="아르카나 하이브리드"]
+    .vehicle-card-item__thumb
+    img {
+    transform: translateY(5px) scale(1.8);
+}
+.vehicle-card-item[data-car-card="필랑트 하이브리드 E-Tech"]
+    .vehicle-card-item__thumb
+    img {
+    transform: translateY(-2px) scale(1.3);
+}
+.vehicle-card-item[data-brand="쉐보레"] .vehicle-card-item__thumb img {
+    transform: scale(1.7);
+}
+.vehicle-card-item[data-brand="BMW"] .vehicle-card-item__thumb img {
+    transform: scale(1.7);
+}
+.vehicle-card-item[data-brand="벤츠"] .vehicle-card-item__thumb img {
+    transform: scale(2);
+}
+.vehicle-card-item[data-brand="아우디"] .vehicle-card-item__thumb img {
+    transform: scale(2.3);
+}
+.vehicle-card-item[data-brand="테슬라"] .vehicle-card-item__thumb img {
+    transform: scale(2.2);
+}
+
 .wizard-car-card {
     background: linear-gradient(145deg, #f9fbfe, #edf3fa);
     border: 1px solid #e0e6ed;
@@ -1491,6 +1678,18 @@ body:has(.wizard-page) {
     margin: 0;
     font-weight: 800;
 }
+.estimate-summary dl .estimate-summary__discount {
+    display: block;
+    grid-column: 1 / -1;
+    margin-top: 2px;
+    padding-top: 12px;
+    border-top: 1px dashed #d7e1f0;
+    color: #2f6bff;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    text-align: center;
+    font-weight: 800;
+}
 .customer-fields {
     gap: 0;
     display: grid;
@@ -1530,7 +1729,7 @@ body:has(.wizard-page) {
     accent-color: var(--blue);
 }
 .wizard-spacer {
-    height: 86px;
+    height: 40px;
     flex-shrink: 0;
 }
 .wizard-spacer[hidden] {
@@ -1558,6 +1757,11 @@ body:has(.wizard-page) {
     height: 54px;
     display: inline-flex;
 }
+.wizard-actions__group {
+    flex: 1;
+    gap: 8px;
+    display: flex;
+}
 .back-button {
     color: #536071;
     background: #eef1f5;
@@ -1566,6 +1770,14 @@ body:has(.wizard-page) {
 }
 .back-arrow {
     transform: rotate(180deg);
+}
+.consult-button {
+    color: #2f6bff;
+    background: #edf3ff;
+    border: 1px solid #cfe0ff;
+    font-size: var(--font-size-base);
+    flex: 1;
+    font-weight: 800;
 }
 .next-button {
     background: var(--blue);
@@ -1845,21 +2057,20 @@ body:has(.wizard-page) {
 .wizard-hero {
     color: #17345c;
     text-align: center;
-    background: #fff;
-    /* background:radial-gradient(circle at 75% 25%,#2f6bff47,#0000 34%),linear-gradient(145deg,#07172b,#0b2442); */
-    padding: 38px 22px 66px;
+    background: #ffffff;
+    padding: 38px 22px 28px;
     position: relative;
     overflow: hidden;
 }
 /* .wizard-hero:after {
-  content:"";
-  border:1px solid #2f6bff1f;
-  border-radius:50%;
-  width:210px;
-  height:210px;
-  position:absolute;
-  top:-65px;
-  right:-82px
+    content: "";
+    border: 1px solid #2f6bff1f;
+    border-radius: 50%;
+    width: 210px;
+    height: 210px;
+    position: absolute;
+    top: -65px;
+    right: -82px;
 } */
 .wizard-hero > p,
 .wizard-hero h1,
@@ -1893,6 +2104,45 @@ body:has(.wizard-page) {
     margin: 15px auto 0;
     line-height: 1.65;
     display: block;
+}
+
+.wizard-hero-visual {
+    position: relative;
+    z-index: 1;
+    width: calc(100% + 44px);
+    max-width: none;
+    aspect-ratio: 1000 / 390;
+    margin: 2px -22px 0;
+    overflow: hidden;
+    background: #ffffff;
+}
+.wizard-hero-visual::before,
+.wizard-hero-visual::after {
+    display: none;
+}
+.wizard-hero-visual__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 59%;
+    transform: translateX(-1px) scale(1.14);
+    transform-origin: center center;
+    margin: 0 auto;
+}
+@media (max-width: 640px) {
+    .wizard-hero {
+        padding: 34px 18px 20px;
+    }
+    .wizard-hero-visual {
+        width: calc(100% + 36px);
+        aspect-ratio: 1000 / 490;
+        margin: 2px -18px 0;
+    }
+    .wizard-hero-visual__image {
+        object-position: center 58%;
+        transform: scale(1.08);
+    }
 }
 .estimate-shell {
     border-color: #e0e8f2;
@@ -4769,6 +5019,26 @@ body.loader-active {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    .wizard-brand-grid button {
+        min-height: 68px;
+        padding: 9px 6px 8px;
+        gap: 5px;
+    }
+
+    .brand-logo-box img {
+        max-width: 92px;
+        max-height: 16px;
+    }
+
+    .brand-logo-box.is-light-logo {
+        padding: 5px 7px;
+    }
+
+    .brand-logo-box.is-light-logo img {
+        max-width: 84px;
+        max-height: 14px;
+    }
+
     .rate-grid {
         grid-template-columns: repeat(3, 1fr);
     }
@@ -4875,11 +5145,19 @@ body.loader-active {
 /* ==============================
    전기차 지역별 보조금
 ============================== */
+.subsidy-region-block {
+    margin-bottom: 26px;
+}
+
 .subsidy-region-block .option-helper {
-    margin: -4px 0 14px;
+    margin: -4px 0 6px;
     color: #667085;
     font-size: var(--font-14);
     line-height: 1.55;
+}
+
+.subsidy-region-block .wizard-select {
+    margin-top: 14px;
 }
 
 .subsidy-region-block .wizard-select select {
@@ -4889,7 +5167,7 @@ body.loader-active {
 
 .subsidy-notice {
     display: block;
-    margin-top: 10px;
+    margin: 0;
     color: #8a94a6;
     font-size: var(--font-13);
     line-height: 1.5;
@@ -5349,7 +5627,6 @@ body.loader-active {
     }
 }
 
-
 /* ==============================
    Header Vehicle Search Modal
 ============================== */
@@ -5376,7 +5653,7 @@ body.loader-active {
     overflow: visible;
 }
 .vehicle-search-modal::backdrop {
-    background: rgba(12, 26, 45, .62);
+    background: rgba(12, 26, 45, 0.62);
     backdrop-filter: blur(4px);
 }
 .vehicle-search-modal__panel {
@@ -5387,7 +5664,7 @@ body.loader-active {
     border-radius: 20px;
     background: #fff;
     overflow: hidden;
-    box-shadow: 0 24px 70px rgba(12, 29, 52, .28);
+    box-shadow: 0 24px 70px rgba(12, 29, 52, 0.28);
 }
 .vehicle-search-modal__header {
     display: flex;
@@ -5406,7 +5683,7 @@ body.loader-active {
 .vehicle-search-modal__header p {
     margin: 6px 0 0;
     color: #718197;
-    font-size: .875rem;
+    font-size: 0.875rem;
     line-height: 1.5;
 }
 .vehicle-search-modal__close {
@@ -5557,4 +5834,126 @@ body.loader-active {
         height: 100%;
         max-height: none;
     }
+}
+
+/* ==============================
+   상담 방법 선택
+============================== */
+.contact-method-field {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.contact-method-field legend {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #172033;
+}
+
+.contact-method-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.625rem;
+}
+
+.contact-method-option {
+    position: relative;
+    display: block;
+    cursor: pointer;
+}
+
+.contact-method-option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.contact-method-option span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.5rem;
+    padding: 0.75rem;
+    border: 1px solid #d7e0ed;
+    border-radius: 0.75rem;
+    background: #fff;
+    color: #4f5f75;
+    font-size: 1rem;
+    font-weight: 700;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.contact-method-option input:checked + span {
+    border-color: #2f6bff;
+    background: #edf3ff;
+    color: #1d55dc;
+    box-shadow: 0 0 0 2px rgba(47, 107, 255, 0.1);
+}
+
+.contact-method-option input:focus-visible + span {
+    outline: 3px solid rgba(47, 107, 255, 0.24);
+    outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+    .contact-method-options {
+        gap: 0.5rem;
+    }
+
+    .contact-method-option span {
+        min-height: 3.25rem;
+        padding: 0.625rem 0.5rem;
+        font-size: 0.9375rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .usage-row {
+        gap: 6px;
+    }
+
+    .usage-row button {
+        font-size: 0.8125rem;
+        padding: 0 4px;
+        letter-spacing: -0.02em;
+    }
+}
+
+@media (max-width: 767px) {
+    .vehicle-card-item {
+        min-height: 88px;
+        padding: 14px 16px;
+        border-radius: 20px;
+    }
+    .vehicle-card-item__name {
+        font-size: var(--font-18);
+    }
+    .vehicle-card-item__thumb {
+        flex-basis: 132px;
+    }
+    .vehicle-card-item__thumb img {
+        max-width: 132px;
+        max-height: 64px;
+    }
+}
+
+/* 동적 렌더링 시 브라우저가 이전 버튼 위치로 스크롤을 되돌리는 현상 방지 */
+#wizardContent,
+#wizardContent .option-block {
+    overflow-anchor: none;
+}
+
+/* 차량 구분 선택 후 DOM 재구성 시 브라우저 자동 스크롤 앵커 방지 */
+#wizardContent {
+    overflow-anchor: none;
 }

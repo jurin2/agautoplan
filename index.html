@@ -34,7 +34,7 @@
         <i>A</i>
         <b></b><b></b><b></b>
       </div>
-      <div class="loader-status">견적 화면 준비 중</div>
+      <div class="loader-status">전국 최저가 견적을 불러오는 중</div>
     </div>
   </div>
 
@@ -43,7 +43,10 @@
     <header class="wizard-header">
       <a class="brand-mark" href="#top" aria-label="오토지니 홈">
         <span class="brand-symbol">A</span>
-        <span>AUTOGENIE</span>
+        <span class="brand-copy">
+          <strong class="brand-copy__name">AUTOGENIE</strong>
+          <small class="brand-copy__sub">오토지니</small>
+        </span>
       </a>
       <button type="button" class="header-caption header-vehicle-search-button" id="openVehicleSearch" aria-haspopup="dialog" aria-controls="vehicleSearchModal">
         <span class="header-vehicle-search-button__desktop">차량 통합검색</span>
@@ -54,7 +57,10 @@
     <section class="wizard-hero">
       <p>국산·수입 전 차종 비교</p>
       <h1>내가 원하는 차량,<br><strong>조건까지 한 번에 선택하세요.</strong></h1>
-      <span>4단계만 입력하면 전담 매니저가 맞춤 견적을 안내해 드립니다.</span>
+      <span>전국 최저가 맞춤 견적을 받아보실 수 있습니다.</span>
+      <div class="wizard-hero-visual" aria-hidden="true">
+        <img src="images/car-img-bg.png" alt="" class="wizard-hero-visual__image">
+      </div>
     </section>
 
     <section class="estimate-shell" id="estimate">
@@ -126,12 +132,15 @@
               <path d="M5 12h14M14 7l5 5-5 5"></path>
             </svg>
           </button>
-          <button class="next-button" id="nextButton" type="button">
-            다음 단계
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 12h14M14 7l5 5-5 5"></path>
-            </svg>
-          </button>
+          <div class="wizard-actions__group" id="actionGroup">
+            <button class="consult-button" id="consultButton" type="button" hidden>바로 견적신청</button>
+            <button class="next-button" id="nextButton" type="button">
+              다음 단계
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14M14 7l5 5-5 5"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </form>
     </section>

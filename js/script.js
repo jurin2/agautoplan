@@ -11,10 +11,10 @@
     history.scrollRestoration = "manual";
   }
 
+  // 초기 진입 시에만 한 번 맨 위에서 시작합니다.
+  // load/pageshow 이후에는 사용자가 이미 선택하거나 스크롤했을 수 있으므로
+  // 스크롤 위치를 다시 0으로 변경하지 않습니다.
   resetPageScroll();
-  window.addEventListener("pageshow", resetPageScroll);
-  window.addEventListener("load", resetPageScroll);
-  window.addEventListener("beforeunload", resetPageScroll);
 
   // 프로젝트 폴더가 어느 경로로 이동해도 에셋을 script.js 위치 기준으로 찾습니다.
   const scriptElement = document.currentScript;
@@ -33,21 +33,18 @@
   }
   const landingLoader = document.getElementById("landingLoader");
   if (landingLoader) {
-    resetPageScroll();
     document.body.classList.add("loader-active");
 
     window.setTimeout(() => {
-      resetPageScroll();
       landingLoader.setAttribute("aria-hidden", "true");
 
-      // 로더의 페이드아웃이 끝난 뒤 스크롤 잠금을 해제해
-      // 스크롤바 생성으로 인한 화면 좌우 흔들림을 방지합니다.
+      // 로더가 사라진 뒤에는 현재 스크롤 위치를 건드리지 않습니다.
+      // 사용자가 빠르게 차량 구분을 선택한 경우에도 맨 위로 튀지 않습니다.
       window.setTimeout(() => {
         document.body.classList.remove("loader-active");
         landingLoader.remove();
-        window.requestAnimationFrame(resetPageScroll);
       }, 400);
-    }, 2000);
+    }, 3000);
   }
 
 
@@ -6524,11 +6521,11 @@ const vehicleCatalog = [
 
   // Google Apps Script를 웹앱으로 배포한 뒤 아래 주소만 교체하세요.
   // 예: https://script.google.com/macros/s/AKfycb.../exec
-  const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyn-e-8alXP25C8rUrKvDcge8r0L8YPHjJ9ZU4tLH4khosBJ2GgVg5P7B2E0IyyTT-v/exec";
+  const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwbN9KUT6PaeO9vvmGYcmLNAM7a6zu5_lDse_P_iilkBzKGOSauNSPcwBGMvgUYUaMP/exec";
 
   const trims = ["전체 모델", "2.5 가솔린", "3.5 가솔린", "3.5 가솔린 AWD"];
   const rateOptions = ["10%", "20%", "30%", "40%", "50%"];
-  const mileageOptions = ["연 1만km", "연 2만km", "연 3만km", "무제한"];
+  const mileageOptions = ["연 1만km", "연 2만km", "연 3만km", "연 4만km", "무제한", "상담 후 결정"];
 
   // 사이트에는 제조사 공식 트림명을 그대로 표시하고,
   // 관리자 메일 전송 시에만 한글 보조명을 함께 붙입니다.
@@ -6604,6 +6601,7 @@ const vehicleCatalog = [
     subsidyRegion: "",
     customerName: "",
     customerPhone: "",
+    contactMethod: "",
     submitted: false
   };
 
@@ -6612,6 +6610,7 @@ const vehicleCatalog = [
   const actions = document.getElementById("wizardActions");
   const spacer = document.querySelector(".wizard-spacer");
   const backButton = document.getElementById("backButton");
+  const consultButton = document.getElementById("consultButton");
   const nextButton = document.getElementById("nextButton");
   const form = document.getElementById("estimateForm");
 
@@ -6627,6 +6626,7 @@ const vehicleCatalog = [
     state.subsidyRegion = "";
     state.customerName = "";
     state.customerPhone = "";
+    state.contactMethod = "";
     state.submitted = false;
 
     // 다시 1단계부터 완료해야 다음 단계 탭을 열 수 있도록 합니다.
@@ -6636,6 +6636,28 @@ const vehicleCatalog = [
   function currentBrands() {
     if (!state.market) return [];
     return brands.filter(brand => brand.market === state.market);
+  }
+
+  function getBrandLogoPath(brandName) {
+    const logoMap = {
+      "현대": "./images/logo/bk_uniform/hyundai.svg",
+      "제네시스": "./images/logo/bk_uniform/genesis.svg",
+      "기아": "./images/logo/bk_uniform/kia.svg",
+      "KGM": "./images/logo/bk_uniform/kgm.svg",
+      "르노": "./images/logo/bk_uniform/renault.svg",
+      "쉐보레": "./images/logo/bk_uniform/chevrolet.svg",
+      "BMW": "./images/logo/bk_uniform/bmw.svg",
+      "벤츠": "./images/logo/bk_uniform/benz.svg",
+      "아우디": "./images/logo/bk_uniform/audi.svg",
+      "볼보": "./images/logo/bk_uniform/volvo.svg",
+      "테슬라": "./images/logo/bk_uniform/tesla.svg"
+    };
+
+    return logoMap[brandName] || "";
+  }
+
+  function isLightBrandLogo() {
+    return false;
   }
 
   function currentBrand() {
@@ -6688,6 +6710,13 @@ const vehicleCatalog = [
     return assetUrl(imagePath);
   }
 
+  function getCarPreviewImage(brandName, carName) {
+    const brand = vehicleCatalog.find(item => item.name === brandName);
+    const car = brand?.cars.find(item => item.name === carName);
+    const imagePath = car?.paints?.[0]?.image || fallbackImage;
+    return assetUrl(imagePath);
+  }
+
   function ensureSelection() {
     if (!state.market) {
       state.brandName = "";
@@ -6726,7 +6755,7 @@ const vehicleCatalog = [
         <div>
           <small>선택 차량</small>
           <strong>${brand.name} ${state.carName}</strong>
-          <span class="selected-vehicle-paint">${paint ? paint.name : "색상 미선택"}</span>
+          <span class="selected-vehicle-paint">${paint ? paint.name : "상담 후 결정"}</span>
           ${state.trim || state.subTrim ? `<span class="selected-vehicle-trim">${state.trim}${state.subTrim ? ` · ${state.subTrim}` : ""}</span>` : ""}
         </div>
       </div>
@@ -6783,11 +6812,23 @@ const vehicleCatalog = [
           <legend><b>2</b> 브랜드</legend>
           ${state.market ? `
             <div class="wizard-brand-grid">
-              ${currentBrands().map(item => `
+              ${currentBrands().map(item => {
+                const brandLogoPath = getBrandLogoPath(item.name);
+
+                return `
                 <button class="${item.name === state.brandName ? "active" : ""}" type="button" data-brand="${item.name}">
-                  <small>${item.short}</small>${item.name}
+                  ${brandLogoPath ? `
+                    <span class="brand-logo-box ${isLightBrandLogo(item.name) ? "is-light-logo" : ""}">
+                      <img src="${brandLogoPath}" alt="${item.name} 로고">
+                    </span>
+                    <span class="brand-label">${item.name}</span>
+                  ` : `
+                    <small>${item.short}</small>
+                    <span class="brand-label">${item.name}</span>
+                  `}
                 </button>
-              `).join("")}
+              `;
+              }).join("")}
             </div>
           ` : `<p class="empty-selection-guide">차량 구분을 먼저 선택해 주세요.</p>`}
         </fieldset>
@@ -6795,11 +6836,15 @@ const vehicleCatalog = [
         <fieldset class="option-block ${!state.brandName ? "is-disabled-block" : ""}" data-option-section="car">
           <legend><b>3</b> 차량</legend>
           ${brand ? `
-            <div class="wizard-select" id="carSelectWrap">
-              <select id="carSelect" aria-label="차량 선택">
-                <option value="">차량을 선택해 주세요</option>
-                ${brand.cars.map(car => `<option value="${car}" ${car === state.carName ? "selected" : ""}>${car}</option>`).join("")}
-              </select>
+            <div class="vehicle-card-list" id="carCardList">
+              ${brand.cars.map(car => `
+                <button class="vehicle-card-item ${car === state.carName ? "active" : ""}" type="button" data-car-card="${car}" data-brand="${state.brandName}" aria-pressed="${car === state.carName ? "true" : "false"}">
+                  <span class="vehicle-card-item__name">${car}</span>
+                  <span class="vehicle-card-item__thumb">
+                    <img src="${getCarPreviewImage(state.brandName, car)}" alt="${state.brandName} ${car}">
+                  </span>
+                </button>
+              `).join("")}
             </div>
           ` : `<p class="empty-selection-guide">브랜드를 먼저 선택해 주세요.</p>`}
         </fieldset>
@@ -6892,24 +6937,24 @@ const vehicleCatalog = [
         </div>
 
         <fieldset class="option-block" data-option-section="usage">
-          <legend><b>1</b> 이용 방식</legend>
-          <div class="segment-control two-column" data-group="usage">
-            ${["장기렌트", "리스"].map(value => `
+          <legend><b>1</b> 이용 방식 선택</legend>
+          <div class="segment-control three-column usage-row" data-group="usage">
+            ${["장기렌트", "리스", "상담 후 결정"].map(value => `
               <button class="${state.usage === value ? "active" : ""}" type="button" data-value="${value}">${value}</button>
             `).join("")}
           </div>
         </fieldset>
 
         <fieldset class="option-block" data-option-section="initialCost">
-          <legend><b>2</b> 초기비용</legend>
+          <legend><b>2</b> 초기비용 선택</legend>
           <div class="segment-control two-column" data-group="initialCost">
-            ${["무보증", "선수금", "보증금", "상담 후 결정"].map(value => `
+            ${["초기비용 0원", "선수금", "보증금", "상담 후 결정"].map(value => `
               <button class="${state.initialCost === value ? "active" : ""}" type="button" data-value="${value}">${value}</button>
             `).join("")}
           </div>
         </fieldset>
 
-        ${state.initialCost && !["무보증", "상담 후 결정"].includes(state.initialCost) ? `
+        ${state.initialCost && !["초기비용 0원", "상담 후 결정"].includes(state.initialCost) ? `
           <fieldset class="option-block conditional-block" data-option-section="rate">
             <legend>${state.initialCost} 비율</legend>
             <div class="rate-grid" data-group="rate">
@@ -6921,29 +6966,13 @@ const vehicleCatalog = [
         ` : ""}
 
         <fieldset class="option-block" data-option-section="mileage">
-          <legend><b>3</b> 연간 주행거리</legend>
+          <legend><b>3</b> 연간 주행거리 선택</legend>
           <div class="mileage-grid" data-group="mileage">
             ${mileageOptions.map(value => `
               <button class="${state.mileage === value ? "active" : ""}" type="button" data-value="${value}">${value}</button>
             `).join("")}
           </div>
         </fieldset>
-
-        ${isElectricVehicle() ? `
-          <fieldset class="option-block subsidy-region-block" data-option-section="subsidy-region">
-            <legend><b>4</b> 지역별 보조금</legend>
-            <p class="option-helper">전기차 보조금 확인을 위해 차량 등록 예정 지역을 선택해 주세요.</p>
-            <div class="wizard-select">
-              <select id="subsidyRegionSelect" aria-label="전기차 보조금 지역 선택">
-                <option value="" selected disabled hidden>등록 지역을 선택해 주세요</option>
-                ${subsidyRegions.map(region => `
-                  <option value="${region}" ${state.subsidyRegion === region ? "selected" : ""}>${region}</option>
-                `).join("")}
-              </select>
-            </div>
-            <small class="subsidy-notice">실제 보조금은 차종·세부모델·지자체 예산에 따라 달라질 수 있습니다.</small>
-          </fieldset>
-        ` : ""}
 
         <p class="validation-message" id="validationMessage"></p>
       </div>
@@ -6955,20 +6984,37 @@ const vehicleCatalog = [
       <div class="wizard-step">
         <div class="step-heading">
           <span>STEP 04</span>
-          <h2>상담 정보를 입력해 주세요.</h2>
-          <p>전담 매니저가 선택하신 조건을 확인한 뒤 연락드립니다.</p>
+          <h2>견적 받아볼 정보를 입력해주세요.</h2>
+          <p>선택한 조건으로 견적서를 보내드립니다.</p>
         </div>
 
         <div class="estimate-summary">
           <h3>선택한 견적 조건</h3>
           <dl>
-            <div><dt>차량</dt><dd>${state.brandName} ${state.carName} · ${currentPaint().name}</dd></div>
-            <div><dt>세부모델</dt><dd>${state.trim}${state.subTrim ? ` · ${state.subTrim}` : ""}</dd></div>
-            <div><dt>이용조건</dt><dd>${state.usage} · ${state.initialCost}${!["무보증", "상담 후 결정"].includes(state.initialCost) && state.rate ? ` ${state.rate}` : ""}</dd></div>
-            <div><dt>주행거리</dt><dd>${state.mileage}</dd></div>
-            ${isElectricVehicle() ? `<div><dt>보조금 지역</dt><dd>${state.subsidyRegion}</dd></div>` : ""}
+            <div><dt>차량</dt><dd>${state.brandName && state.carName ? `${state.brandName} ${state.carName}` : "상담 후 결정"} · ${currentPaint()?.name || "상담 후 결정"}</dd></div>
+            <div><dt>세부모델</dt><dd>${state.trim || "상담 후 결정"}${state.subTrim ? ` · ${state.subTrim}` : ""}</dd></div>
+            <div><dt>이용조건</dt><dd>${state.usage || "상담 후 결정"} · ${state.initialCost || "상담 후 결정"}${!["초기비용 0원", "상담 후 결정"].includes(state.initialCost) && state.rate ? ` ${state.rate}` : ""}</dd></div>
+            <div><dt>주행거리</dt><dd>${state.mileage || "상담 후 결정"}</dd></div>
+            <div><dt>할인율</dt><dd>최대 10%</dd></div>
+            ${isElectricVehicle() ? `<div><dt>보조금 지역</dt><dd data-summary-subsidy-region>${state.subsidyRegion || "선택 전"}</dd></div>` : ""}
           </dl>
         </div>
+
+        ${isElectricVehicle() ? `
+          <fieldset class="option-block subsidy-region-block" data-option-section="subsidy-region">
+            <legend>지역별 보조금</legend>
+            <p class="option-helper">전기차 보조금 확인을 위해 차량 등록 예정 지역을 선택해 주세요.</p>
+            <small class="subsidy-notice">*실제 보조금은 차종·세부모델·지자체 예산에 따라 달라질 수 있습니다.</small>
+            <div class="wizard-select">
+              <select id="subsidyRegionSelect" aria-label="전기차 보조금 지역 선택">
+                <option value="" selected disabled hidden>등록 지역을 선택해 주세요</option>
+                ${subsidyRegions.map(region => `
+                  <option value="${region}" ${state.subsidyRegion === region ? "selected" : ""}>${region}</option>
+                `).join("")}
+              </select>
+            </div>
+          </fieldset>
+        ` : ""}
 
         <div class="customer-fields">
           <label>
@@ -6983,6 +7029,19 @@ const vehicleCatalog = [
               autocomplete="tel" maxlength="13" aria-describedby="customerPhoneError" required>
             <span class="field-error" id="customerPhoneError" aria-live="polite"></span>
           </label>
+
+          <fieldset class="contact-method-field">
+            <legend>견적 받아볼 방법</legend>
+            <div class="contact-method-options" role="radiogroup" aria-describedby="contactMethodError">
+              ${["전화", "문자", "카톡"].map(method => `
+                <label class="contact-method-option">
+                  <input type="radio" name="contactMethod" value="${method}" ${state.contactMethod === method ? "checked" : ""}>
+                  <span>${method}</span>
+                </label>
+              `).join("")}
+            </div>
+            <span class="field-error" id="contactMethodError" aria-live="polite"></span>
+          </fieldset>
         </div>
 
         <div class="wizard-privacy-row">
@@ -6999,9 +7058,26 @@ const vehicleCatalog = [
 
   function renderComplete() {
     const paint = currentPaint();
-    const initialCostText = ["무보증", "상담 후 결정"].includes(state.initialCost)
-      ? state.initialCost
-      : `${state.initialCost}${state.rate ? ` ${state.rate}` : ""}`;
+    const pendingText = "상담 후 결정";
+    const brandText = state.brandName || pendingText;
+    const carText = state.carName || pendingText;
+    const colorText = paint?.name || pendingText;
+    const modelText = state.trim
+      ? `${state.trim}${state.subTrim ? ` · ${state.subTrim}` : ""}`
+      : pendingText;
+    const usageText = state.usage || pendingText;
+    const initialCostText = !state.initialCost
+      ? pendingText
+      : ["초기비용 0원", pendingText].includes(state.initialCost)
+        ? state.initialCost
+        : `${state.initialCost}${state.rate ? ` ${state.rate}` : ""}`;
+    const mileageText = state.mileage || pendingText;
+    const subsidyRegionText = isElectricVehicle()
+      ? (state.subsidyRegion || pendingText)
+      : "해당 없음";
+    const vehicleTitle = state.brandName && state.carName
+      ? `${state.brandName} ${state.carName}`
+      : pendingText;
 
     return `
       <div class="wizard-complete">
@@ -7011,25 +7087,26 @@ const vehicleCatalog = [
 
         <section class="completion-summary" aria-label="견적 신청 내역">
           <div class="completion-vehicle">
-            <img src="${currentCarImage()}" alt="${state.brandName} ${state.carName}">
+            <img src="${currentCarImage()}" alt="${vehicleTitle}">
             <div>
               <small>선택 차량</small>
-              <strong>${state.brandName} ${state.carName}</strong>
-              <span>${paint?.name || "색상 미선택"}</span>
+              <strong>${vehicleTitle}</strong>
+              <span>${colorText}</span>
             </div>
           </div>
 
           <div class="completion-section">
             <h3>차량 및 이용조건</h3>
             <dl class="completion-details">
-              <div><dt>브랜드</dt><dd>${state.brandName}</dd></div>
-              <div><dt>차량</dt><dd>${state.carName}</dd></div>
-              <div><dt>외장 색상</dt><dd>${paint?.name || "-"}</dd></div>
-              <div><dt>세부 모델</dt><dd>${state.trim}${state.subTrim ? ` · ${state.subTrim}` : ""}</dd></div>
-              <div><dt>이용 방식</dt><dd>${state.usage}</dd></div>
+              <div><dt>브랜드</dt><dd>${brandText}</dd></div>
+              <div><dt>차량</dt><dd>${carText}</dd></div>
+              <div><dt>외장 색상</dt><dd>${colorText}</dd></div>
+              <div><dt>세부 모델</dt><dd>${modelText}</dd></div>
+              <div><dt>이용 방식</dt><dd>${usageText}</dd></div>
               <div><dt>초기비용</dt><dd>${initialCostText}</dd></div>
-              <div><dt>주행거리</dt><dd>${state.mileage}</dd></div>
-              ${isElectricVehicle() ? `<div><dt>보조금 지역</dt><dd>${state.subsidyRegion}</dd></div>` : ""}
+              <div><dt>주행거리</dt><dd>${mileageText}</dd></div>
+              <div><dt>할인율</dt><dd>최대 10%</dd></div>
+              <div><dt>보조금 지역</dt><dd>${subsidyRegionText}</dd></div>
             </dl>
           </div>
 
@@ -7038,12 +7115,13 @@ const vehicleCatalog = [
             <dl class="completion-details">
               <div><dt>성함</dt><dd>${state.customerName}</dd></div>
               <div><dt>연락처</dt><dd>${state.customerPhone}</dd></div>
+              <div><dt>상담 방법</dt><dd>${state.contactMethod}</dd></div>
             </dl>
           </div>
         </section>
 
         <div class="wizard-spacer wizard-spacer--complete" aria-hidden="true"></div>
-        <button type="button" id="restartButton">견적신청완료</button>
+        <button type="button" id="restartButton">확인</button>
       </div>
     `;
   }
@@ -7056,7 +7134,31 @@ const vehicleCatalog = [
     return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"></path></svg>`;
   }
 
-  function render() {
+  function render(options = {}) {
+    const preserveScroll = options.preserveScroll === true;
+    const preservedScrollY = preserveScroll ? window.scrollY : 0;
+    const preservedContentHeight = preserveScroll ? content.offsetHeight : 0;
+    const scrollRoot = document.documentElement;
+    const scrollBody = document.body;
+    const scroller = document.scrollingElement || scrollRoot;
+    const previousRootBehavior = scrollRoot.style.scrollBehavior;
+    const previousBodyBehavior = scrollBody.style.scrollBehavior;
+    const previousRootAnchor = scrollRoot.style.overflowAnchor;
+    const previousBodyAnchor = scrollBody.style.overflowAnchor;
+    const previousContentAnchor = content.style.overflowAnchor;
+
+    if (preserveScroll) {
+      // innerHTML 교체 중에는 전역 scroll-behavior:smooth와 스크롤 앵커를
+      // 잠시 끕니다. 그렇지 않으면 기존 위치 복원이 또 하나의 스크롤
+      // 애니메이션이 되어 브랜드 선택 모션을 점프처럼 보이게 만듭니다.
+      scrollRoot.style.scrollBehavior = "auto";
+      scrollBody.style.scrollBehavior = "auto";
+      scrollRoot.style.overflowAnchor = "none";
+      scrollBody.style.overflowAnchor = "none";
+      content.style.overflowAnchor = "none";
+      content.style.minHeight = `${preservedContentHeight}px`;
+    }
+
     ensureSelection();
 
     if (state.submitted) {
@@ -7090,26 +7192,142 @@ const vehicleCatalog = [
     });
     indicator.className = `step-indicator progress-${state.step}`;
 
+    const shouldShowConsultButton = state.step === 1 || state.step === 2;
+
     backButton.hidden = state.step === 1;
+    consultButton.hidden = !shouldShowConsultButton;
+    consultButton.textContent = "바로 견적신청";
+    actions.classList.toggle("has-consult-button", shouldShowConsultButton);
     nextButton.innerHTML = state.step === 4
       ? `견적신청 ${arrowIcon()}`
       : `다음 단계 ${arrowIcon()}`;
 
     bindStepEvents();
-  }
 
-  function scrollToNextSelection(selector) {
-    window.requestAnimationFrame(() => {
+    if (preserveScroll) {
+      // CSS smooth를 끈 상태에서 실제 스크롤 컨테이너 값을 직접 고정합니다.
+      // 두 프레임 동안 유지해 DOM 높이 계산과 브라우저 앵커 보정이 끝난 뒤
+      // 원래 설정을 복원합니다.
+      scroller.scrollTop = preservedScrollY;
+
       window.requestAnimationFrame(() => {
-        const target = content.querySelector(selector) || document.querySelector(selector);
-        if (!target) return;
+        scroller.scrollTop = preservedScrollY;
 
-        target.scrollIntoView({
-          behavior: "smooth",
-          block: "center"
+        window.requestAnimationFrame(() => {
+          scroller.scrollTop = preservedScrollY;
+          content.style.minHeight = "";
+          scrollRoot.style.scrollBehavior = previousRootBehavior;
+          scrollBody.style.scrollBehavior = previousBodyBehavior;
+          scrollRoot.style.overflowAnchor = previousRootAnchor;
+          scrollBody.style.overflowAnchor = previousBodyAnchor;
+          content.style.overflowAnchor = previousContentAnchor;
         });
       });
+    }
+  }
+
+  function scrollToNextSelection(selector, block = "start", viewportTop = null, behavior = "smooth") {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    // 렌더 직후에는 레이아웃 높이가 한두 프레임 동안 변할 수 있으므로
+    // 목표 요소를 매번 다시 찾고 실제 좌표로 이동합니다.
+    const moveToTarget = () => {
+      const target = content.querySelector(selector) || document.querySelector(selector);
+      if (!target) return;
+
+      content.style.minHeight = "";
+
+      const header = document.querySelector(".wizard-header") || document.querySelector(".site-header");
+      const headerHeight = header ? header.getBoundingClientRect().height : 0;
+      const rect = target.getBoundingClientRect();
+      const targetTop = window.scrollY + rect.top;
+
+      const destination = viewportTop !== null
+        ? targetTop - Number(viewportTop)
+        : targetTop - headerHeight - 8;
+
+      window.scrollTo({
+        top: Math.max(0, destination),
+        left: 0,
+        behavior: prefersReducedMotion ? "auto" : behavior
+      });
+    };
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(moveToTarget);
     });
+
+    // 모바일 브라우저의 늦은 레이아웃 보정까지 반영합니다.
+    window.setTimeout(moveToTarget, 120);
+  }
+
+  let vehicleScrollAnimationId = 0;
+  let vehicleScrollComplete = null;
+
+  function scrollToVehicleSectionTopSmooth(onComplete = null) {
+    const section = content.querySelector('[data-option-section="car"]');
+    if (!section) return false;
+
+    const title = section.querySelector('legend') || section;
+    const header = document.querySelector('.wizard-header') || document.querySelector('.site-header');
+    const headerRect = header ? header.getBoundingClientRect() : null;
+    const headerBottom = headerRect ? Math.max(0, headerRect.bottom) : 0;
+    const startScrollY = window.scrollY;
+    const titleTop = startScrollY + title.getBoundingClientRect().top;
+    const destination = Math.max(0, Math.round(titleTop - headerBottom - 12));
+
+    window.cancelAnimationFrame(vehicleScrollAnimationId);
+    vehicleScrollComplete = onComplete;
+
+    const root = document.documentElement;
+    const body = document.body;
+    const scroller = document.scrollingElement || root;
+    const previousRootBehavior = root.style.scrollBehavior;
+    const previousBodyBehavior = body.style.scrollBehavior;
+
+    // 브랜드 선택에서는 반드시 모션이 보여야 하므로 CSS smooth나
+    // 운영체제의 reduced-motion 설정에 맡기지 않고 직접 애니메이션합니다.
+    root.style.scrollBehavior = 'auto';
+    body.style.scrollBehavior = 'auto';
+
+    const distance = destination - startScrollY;
+    const duration = Math.min(900, Math.max(620, Math.abs(distance) * 0.8));
+    const startedAt = performance.now();
+    const easeInOutCubic = progress => progress < 0.5
+      ? 4 * progress * progress * progress
+      : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+    const finish = () => {
+      scroller.scrollTop = destination;
+      root.style.scrollBehavior = previousRootBehavior;
+      body.style.scrollBehavior = previousBodyBehavior;
+
+      const callback = vehicleScrollComplete;
+      vehicleScrollComplete = null;
+      if (typeof callback === 'function') callback(destination);
+    };
+
+    if (Math.abs(distance) < 2) {
+      finish();
+      return true;
+    }
+
+    const animate = now => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      scroller.scrollTop = Math.round(startScrollY + distance * easeInOutCubic(progress));
+
+      if (progress < 1) {
+        vehicleScrollAnimationId = window.requestAnimationFrame(animate);
+        return;
+      }
+
+      finish();
+    };
+
+    vehicleScrollAnimationId = window.requestAnimationFrame(animate);
+    return true;
   }
 
   function enablePaintDragScroll(scroller) {
@@ -7236,6 +7454,10 @@ const vehicleCatalog = [
         const key = group.dataset.group;
         const value = button.dataset.value;
 
+        // 재렌더링으로 선택 버튼이 사라지기 전에 포커스를 해제해
+        // 브라우저가 이전 버튼 위치로 스크롤을 되돌리지 않게 합니다.
+        button.blur();
+
         if (key === "market") {
           const marketChanged = state.market !== value;
           state.market = value;
@@ -7248,22 +7470,22 @@ const vehicleCatalog = [
           }
         } else {
           state[key] = value;
-          if (key === "initialCost" && ["무보증", "상담 후 결정"].includes(value)) {
+          if (key === "initialCost" && ["초기비용 0원", "상담 후 결정"].includes(value)) {
             state.rate = "없음";
           }
-          if (key === "initialCost" && !["무보증", "상담 후 결정"].includes(value) && state.rate === "없음") {
+          if (key === "initialCost" && !["초기비용 0원", "상담 후 결정"].includes(value) && state.rate === "없음") {
             state.rate = "10%";
           }
         }
-        render();
+        render({ preserveScroll: key === "market" });
 
         if (key === "market") {
-          scrollToNextSelection('[data-option-section="brand"]');
+          scrollToNextSelection('[data-option-section="brand"]', "start");
         } else if (key === "usage") {
           scrollToNextSelection('[data-option-section="initialCost"]');
         } else if (key === "initialCost") {
           scrollToNextSelection(
-            ["무보증", "상담 후 결정"].includes(value)
+            ["초기비용 0원", "상담 후 결정"].includes(value)
               ? '[data-option-section="mileage"]'
               : '[data-option-section="rate"]'
           );
@@ -7275,8 +7497,11 @@ const vehicleCatalog = [
 
     content.querySelectorAll(".wizard-brand-grid button[data-brand]").forEach(button => {
       button.addEventListener("click", () => {
+        button.blur();
+
         const nextBrandName = button.dataset.brand;
         const brandChanged = state.brandName !== nextBrandName;
+
         state.brandName = nextBrandName;
 
         if (brandChanged) {
@@ -7285,8 +7510,10 @@ const vehicleCatalog = [
           resetSelectionsAfterVehicleChange();
         }
 
-        render();
-        scrollToNextSelection('[data-option-section="car"]');
+        // importcar와 동일하게 차량 아이템을 먼저 렌더링한 뒤,
+        // 새 레이아웃이 확정된 차량 제목 위치로 부드럽게 이동합니다.
+        render({ preserveScroll: true });
+        scrollToNextSelection('[data-option-section="car"]', "start");
       });
     });
 
@@ -7321,10 +7548,9 @@ const vehicleCatalog = [
       });
     });
 
-    const carSelect = document.getElementById("carSelect");
-    if (carSelect) {
-      carSelect.addEventListener("change", () => {
-        const nextCarName = carSelect.value;
+    content.querySelectorAll("[data-car-card]").forEach(button => {
+      button.addEventListener("click", () => {
+        const nextCarName = button.dataset.carCard;
         const carChanged = state.carName !== nextCarName;
         state.carName = nextCarName;
 
@@ -7336,10 +7562,10 @@ const vehicleCatalog = [
         render();
 
         if (state.carName) {
-          scrollToNextSelection('[data-option-section="paint"]');
+          scrollToNextSelection('.wizard-car-card', "start", 76);
         }
       });
-    }
+    });
 
 
     content.querySelectorAll("[data-engine-model]").forEach(button => {
@@ -7362,6 +7588,8 @@ const vehicleCatalog = [
     const subsidyRegionSelect = document.getElementById("subsidyRegionSelect");
     subsidyRegionSelect?.addEventListener("change", () => {
       state.subsidyRegion = subsidyRegionSelect.value;
+      const summaryValue = document.querySelector('[data-summary-subsidy-region]');
+      if (summaryValue) summaryValue.textContent = state.subsidyRegion;
       showValidation("");
     });
 
@@ -7412,6 +7640,14 @@ const vehicleCatalog = [
         showValidation("");
       });
     }
+
+    content.querySelectorAll('input[name="contactMethod"]').forEach(input => {
+      input.addEventListener("change", event => {
+        state.contactMethod = event.target.value;
+        setFieldError(event.target, document.getElementById("contactMethodError"), "");
+        showValidation("");
+      });
+    });
 
   
   const vehicleSearchModal = document.getElementById("vehicleSearchModal");
@@ -7511,10 +7747,7 @@ const vehicleCatalog = [
     vehicleSearchModal?.close();
     render();
     window.requestAnimationFrame(() => {
-      document.querySelector('[data-option-section="paint"]')?.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-      });
+      scrollToNextSelection('.wizard-car-card', "start", 76);
     });
   });
 
@@ -7553,6 +7786,7 @@ const vehicleCatalog = [
     state.subsidyRegion = "";
     state.customerName = "";
     state.customerPhone = "";
+    state.contactMethod = "";
     state.submitted = false;
     render();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -7661,6 +7895,15 @@ const vehicleCatalog = [
     return !hasRepeatedBothGroups && !blockedNumbers.includes(subscriberNumber);
   }
 
+  function moveToConsultStep() {
+    // 1·2단계에서 바로 견적 신청을 선택하면 정보입력 단계로 이동합니다.
+    // 선택하지 않은 항목은 STEP 04 요약에서 "상담 후 결정"으로 표시합니다.
+    state.step = 4;
+    state.maxReachedStep = Math.max(state.maxReachedStep, 4);
+    render();
+    scrollToEstimate();
+  }
+
   function validateCurrentStep() {
     if (state.step === 1) {
       if (!state.market) {
@@ -7703,17 +7946,12 @@ const vehicleCatalog = [
         showValidation("초기비용 조건을 선택해 주세요.");
         return false;
       }
-      if (!["무보증", "상담 후 결정"].includes(state.initialCost) && !state.rate) {
+      if (!["초기비용 0원", "상담 후 결정"].includes(state.initialCost) && !state.rate) {
         showValidation(`${state.initialCost} 비율을 선택해 주세요.`);
         return false;
       }
       if (!state.mileage) {
         showValidation("연간 주행거리를 선택해 주세요.");
-        return false;
-      }
-      if (isElectricVehicle() && !state.subsidyRegion) {
-        showValidation("전기차 보조금 확인 지역을 선택해 주세요.");
-        document.getElementById("subsidyRegionSelect")?.focus();
         return false;
       }
       return true;
@@ -7722,11 +7960,19 @@ const vehicleCatalog = [
     if (state.step === 4) {
       const name = document.getElementById("customerName");
       const phone = document.getElementById("customerPhone");
+      const contactMethod = document.querySelector('input[name="contactMethod"]:checked');
       const privacy = document.getElementById("privacyAgree");
       const nameError = document.getElementById("customerNameError");
       const phoneError = document.getElementById("customerPhoneError");
+      const contactMethodError = document.getElementById("contactMethodError");
 
       clearCustomerErrors();
+
+      if (isElectricVehicle() && !state.subsidyRegion) {
+        showValidation("전기차 보조금 확인 지역을 선택해 주세요.");
+        document.getElementById("subsidyRegionSelect")?.focus();
+        return false;
+      }
 
       if (!isValidCustomerName(name.value)) {
         const message = "올바른 성함을 입력해 주세요.";
@@ -7742,6 +7988,13 @@ const vehicleCatalog = [
         return false;
       }
 
+      if (!contactMethod) {
+        const message = "상담 방법을 선택해 주세요.";
+        setFieldError(document.querySelector('input[name="contactMethod"]'), contactMethodError, message);
+        document.querySelector('input[name="contactMethod"]')?.focus();
+        return false;
+      }
+
       if (!privacy.checked) {
         showValidation("개인정보 수집 및 이용 동의가 필요합니다.");
         privacy.focus();
@@ -7750,6 +8003,7 @@ const vehicleCatalog = [
 
       state.customerName = name.value.trim().replace(/\s+/g, " ");
       state.customerPhone = phone.value;
+      state.contactMethod = contactMethod.value;
     }
 
     return true;
@@ -7764,6 +8018,7 @@ const vehicleCatalog = [
 
   function buildEstimatePayload() {
     const paint = currentPaint();
+    const pendingText = "상담 후 결정";
 
     // 제출 직전에 화면의 지역 선택값을 한 번 더 읽어
     // state와 실제 select 값이 어긋나는 상황을 방지합니다.
@@ -7775,23 +8030,26 @@ const vehicleCatalog = [
     return {
       submittedAt: new Date().toLocaleString("ko-KR"),
       vehicleType: state.market === "domestic" ? "국산차" : "수입차",
-      brand: state.brandName,
-      vehicle: state.carName,
-      exteriorColor: paint?.name || "",
-      model: state.trim,
-      trim: getTrimTextForMail(state.subTrim),
-      usageType: state.usage,
-      initialCostType: state.initialCost,
-      initialCostRate: ["무보증", "상담 후 결정"].includes(state.initialCost) ? "해당 없음" : state.rate,
-      annualMileage: state.mileage,
+      brand: state.brandName || pendingText,
+      vehicle: state.carName || pendingText,
+      exteriorColor: paint?.name || pendingText,
+      model: state.trim || pendingText,
+      trim: getTrimTextForMail(state.subTrim || pendingText),
+      usageType: state.usage || pendingText,
+      initialCostType: state.initialCost || pendingText,
+      initialCostRate: !state.initialCost || ["초기비용 0원", pendingText].includes(state.initialCost)
+        ? "해당 없음"
+        : (state.rate || pendingText),
+      annualMileage: state.mileage || pendingText,
 
       // Apps Script의 data.subsidyRegion과 동일한 필드명으로 전송합니다.
       subsidyRegion: isElectricVehicle()
-        ? (state.subsidyRegion || "")
+        ? (state.subsidyRegion || pendingText)
         : "해당 없음",
 
       customerName: state.customerName,
       customerPhone: state.customerPhone,
+      contactMethod: state.contactMethod,
 
       // 기본 유입 정보
       referrer: trafficInfo.referrer,
@@ -7826,6 +8084,7 @@ const vehicleCatalog = [
       subsidyRegion: payload.subsidyRegion || "",
       customerName: payload.customerName || "",
       customerPhone: payload.customerPhone || "",
+      contactMethod: payload.contactMethod || "",
 
       // 기본 유입 정보
       referrer: payload.referrer || "직접 접속",
@@ -7886,6 +8145,10 @@ const vehicleCatalog = [
       render();
       scrollToEstimate();
     }
+  });
+
+  consultButton?.addEventListener("click", () => {
+    moveToConsultStep();
   });
 
   nextButton.addEventListener("click", async () => {
