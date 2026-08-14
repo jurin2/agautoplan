@@ -1627,7 +1627,7 @@ body:has(.wizard-page) {
     margin-top: 13px !important;
 }
 .rate-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 5px;
     display: grid;
 }
@@ -1677,6 +1677,13 @@ body:has(.wizard-page) {
     text-align: right;
     margin: 0;
     font-weight: 800;
+}
+.discount-rate dt {
+    color: #2f6bff !important;
+    font-weight: 800;
+}
+.discount-rate dd {
+    color: #2f6bff !important;
 }
 .estimate-summary dl .estimate-summary__discount {
     display: block;
@@ -2072,6 +2079,12 @@ body:has(.wizard-page) {
     top: -65px;
     right: -82px;
 } */
+.wizard-zero {
+    color: #2f6bff;
+    font-size: var(--font-20);
+    font-weight: 900;
+    margin: 0 1px 0 0;
+}
 .wizard-hero > p,
 .wizard-hero h1,
 .wizard-hero > span {
@@ -2100,8 +2113,8 @@ body:has(.wizard-page) {
 .wizard-hero > span {
     color: #68798f;
     max-width: 385px;
-    font-size: var(--font-size-base);
-    margin: 15px auto 0;
+    font-size: var(--font-16);
+    margin: 5px auto 10px;
     line-height: 1.65;
     display: block;
 }
@@ -5040,7 +5053,7 @@ body.loader-active {
     }
 
     .rate-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .rate-grid button:nth-last-child(-n + 2) {
